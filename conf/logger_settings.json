@@ -1,0 +1,57 @@
+{
+	"classToFilter": [
+        "enstabretagne.simulation.core.implementation.SimObject",
+        "enstabretagne.simulation.core.implementation.SimEngine",
+        "enstabretagne.monitor.implementation.FX3DMonitor2",
+        "enstabretagne.simulation.core.implementation.SimObjectDictionary"
+    ],
+    "levelsToRecord":[ 
+    	"Warning",
+		"Information",
+		"Error",
+		"Detail",
+		"Fatal",
+		"Data"
+    ],
+    "loggerConfs": [
+        {
+	        "activate":true,
+            "parametres": {
+                "FileName": "BasicMovement.xlsx",
+                "LoggerKind": "enstabretagne.base.logger.loggerimpl.Excel.ExcelDataLogger",
+                "DirectoryName": "log"
+            },
+            "classToFilter": [
+		        "enstabretagne.simulation.core.implementation.Convive2",
+		        "enstabretagne.travaux_diriges.td_corrige.cantine.simEntity.convive.mover.MvtSequenceur",
+		        "enstabretagne.travaux_diriges.td_corrige.cantine.simEntity.cantine.occupation.CellOccupation"
+		    ],
+		    "levelsToRecord":[ 
+		    	"Warning",
+				"Error",
+				"Fatal",
+				"Data",
+				"DataSimple",
+				"Information"
+		    ]
+        },
+        {
+	        "activate":false,
+	        "parametres": {
+	            "LoggerKind": "enstabretagne.base.logger.loggerimpl.stdoutput.SortieTexteLogger"
+	        },
+	        "classToFilter": [
+		        "enstabretagne.simulation.core.implementation.Convive2",
+		        "enstabretagne.travaux_diriges.td_corrige.cantine.simEntity.convive.mover.MvtSequenceur"
+		    ],
+		    "levelsToRecord":[ 
+		    	"Warning",
+				"Information",
+				"Error",
+				"Detail",
+				"Fatal"
+		    ]
+	        
+        }
+    ]
+}
