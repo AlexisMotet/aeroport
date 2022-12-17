@@ -14,7 +14,7 @@ public class Main {
         TourDeControleParfaite tourDeControle = new TourDeControleParfaite();
         simuEngine.addEntity( new Avion(simuEngine, tourDeControle));
         simuEngine.addEntity( new Avion(simuEngine, tourDeControle));
-        simuEngine.simulationLoop(null);
+        simuEngine.simulationLoop();
         Logger.Terminate();
     }
 }

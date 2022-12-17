@@ -37,31 +37,27 @@ public class SimuEngine {
         return currentDate;
     }
 
-    public boolean simulationStep(Runnable graphic) {
+    public boolean simulationStep() {
         if (sortedEventList.size() == 0) return false;
         SimEvent currentEvent = sortedEventList.first();
         currentDate = currentEvent.getDateOccurence();
         if (currentDate.compareTo(endDate) > 0) return false;
         sortedEventList.remove(currentEvent);
         currentEvent.process();
-        //graphic.run();
         System.gc();
         return true;
     }
 
-    public void simulationLoop(Runnable graphic) {
-        while (simulationStep(graphic));
+    public void simulationLoop() {
+        while (simulationStep());
     }
 
     public void addEntity(SimEntity entity) {
         entityList.add(entity);
     }
 
-    public SimEntity getNextEntity()
-    {
-        ListIterator<SimEntity> iterator = entityList.listIterator();
-        if (iterator.hasNext()) return iterator.next();
-        return null;
+    public List<SimEntity> getEntityList() {
+        return entityList;
     }
 
     public List<SimEntity> request(Predicate<SimEntity> filter) {
