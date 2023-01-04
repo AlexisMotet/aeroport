@@ -2,27 +2,37 @@ package core.attente;
 
 import enstabretagne.base.math.MoreRandom;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Exponentielle extends Loi{
-    private double lambda;
+    private final Parametre lambda = new Parametre("lambda", 0, 10);
 
     public Exponentielle(double lambda) {
-
-        nom = "Exponentielle";
-        this.lambda = lambda;
+        this.lambda.setVal(lambda);
     }
 
-    private final HashMap<String, Double> parametres = new HashMap<>(){{
-        put("lambda", lambda);
+    private final ArrayList<Parametre> parametres = new ArrayList<>(){{
+        add(lambda);
     }};
 
     @Override
     public Double next(){
-        return getRandom().nextExp(lambda);
+        return getRandom().nextExp(lambda.getVal());
     }
+
     @Override
-    public HashMap<String, Double> getParametres() {
+    public String getNom() {
+        return "Exponentielle";
+    }
+
+    @Override
+    public ArrayList<Parametre> getParametres() {
         return parametres;
+    }
+
+    public Double getEsperance()
+    {
+        return null;
     }
 }

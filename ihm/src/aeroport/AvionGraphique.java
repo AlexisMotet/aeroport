@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AvionGraphique {
 
-    static String chemin = "file:ihm\\TopDown_Planes_Game_Assets_without_source_by_unlucky_studio\\Without Source files -Game Assets\\";
+    static String chemin = "file:ihm\\ressources\\TopDown_Planes_Game_Assets_without_source_by_unlucky_studio\\Without Source files -Game Assets\\";
     static String[] types = {
             "B-17\\Type-1\\Animation\\",
             "B-17\\Type-2\\Animated\\",
@@ -49,8 +49,8 @@ public class AvionGraphique {
 
     String type;
     static HashMap<String, Image> mapImages = new HashMap<>();
-    static int largeur = 40;
-    static int hauteur = 40;
+    public final static int largeur = 40;
+    public final static int hauteur = 40;
     public int futurx = 0;
     public int futury = 0;
     private int x = 0;

@@ -1,5 +1,6 @@
-package aeroport;
+package aeroport.elementsgraphiques;
 
+import aeroport.Point;
 import core.Avion;
 import core.protocole.Consigne;
 import javafx.scene.canvas.GraphicsContext;

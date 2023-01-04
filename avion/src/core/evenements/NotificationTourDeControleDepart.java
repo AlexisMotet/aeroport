@@ -3,6 +3,7 @@ package core.evenements;
 import core.Avion;
 import core.attente.Exponentielle;
 import core.attente.Loi;
+import core.attente.Uniforme;
 import core.protocole.Message;
 import core.protocole.MessageDepart;
 import core.protocole.MessageFinDeVol;
@@ -15,13 +16,13 @@ import enstabretagne.engine.SimEvent;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class NotificationTourDeControleDepart extends SimEvent {
+public class NotificationTourDeControleDepart extends EvenementAvion {
 
-    static private final Loi attenteRoulementDepart = new Exponentielle(10);
-    static private final Loi attenteNotificationTourDeControleDepart = new Exponentielle(10);
-    public static HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("attente decollage", attenteRoulementDepart);
-        put("attente decollag", attenteNotificationTourDeControleDepart);
+    static private final Loi attenteRoulementDepart = new Uniforme(10, 3 );
+    static private final Loi attenteNotificationTourDeControleDepart = new Uniforme(10, 3 );
+    static private final HashMap<String, Loi> attentes = new HashMap<>(){{
+        put("Attente Depart", attenteRoulementDepart);
+        put("Attente Notification Tour De Controle Depart", attenteNotificationTourDeControleDepart);
     }};
 
     private final Avion avion;
@@ -30,6 +31,16 @@ public class NotificationTourDeControleDepart extends SimEvent {
         avion = (Avion) entite;
 
     }
+
+    public static HashMap<String, Loi> getAttentes() {
+        return attentes;
+    }
+
+    @Override
+    public String toString() {
+        return "Notification Tour De Controle Depart";
+    }
+
     @Override
     public void process() {
         try

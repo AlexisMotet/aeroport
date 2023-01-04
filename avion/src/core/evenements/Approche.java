@@ -1,22 +1,21 @@
 package core.evenements;
 
 import core.Avion;
-import core.attente.Exponentielle;
 import core.attente.Loi;
+import core.attente.Uniforme;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 import enstabretagne.engine.SimEntity;
-import enstabretagne.engine.SimEvent;
 
 import java.util.HashMap;
 
-public class Approche extends SimEvent
+public class Approche extends EvenementAvion
 {
     private final Avion avion;
 
-    static private final Loi attenteAtterissage = new Exponentielle(10);
-    public static HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("attente atterissage", attenteAtterissage);
+    static private final Loi attenteAtterissage = new Uniforme(10, 3 );
+    static private final HashMap<String, Loi> attentes = new HashMap<>(){{
+        put("Attente Atterissage", attenteAtterissage);
     }};
 
     public Approche(SimEntity entite, LogicalDateTime dateOccurence)
@@ -24,6 +23,16 @@ public class Approche extends SimEvent
         super(entite, dateOccurence);
         avion = (Avion) entite;
     }
+
+    public static HashMap<String, Loi> getAttentes() {
+        return attentes;
+    }
+
+    @Override
+    public String toString() {
+        return "Approche";
+    }
+
     @Override
     public void process()
     {

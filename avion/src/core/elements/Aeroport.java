@@ -1,32 +1,13 @@
-package core;
+package core.elements;
 
-import java.io.Serializable;
+import core.TourDeControleParfaite;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Aeroport {
-
-    public static class Piste implements Serializable {
-        Boolean occupee = false;
-
-        private final ArrayList<Terminal> terminaux = new ArrayList<>();
-        HashMap<Integer, Terminal> mapTerminaux = new HashMap<>();
-
-        public Terminal ajouterTerminal(){
-            assert terminaux.size() < 3;
-            Terminal terminal = new Terminal(this);
-            terminaux.add(terminal);
-            mapTerminaux.put(terminal.hashCode(), terminal);
-            return terminal;
-        }
-
-        public ArrayList<Terminal> getTerminaux() {
-            return terminaux;
-        }
-    }
-
     private final ArrayList<Piste> pistes = new ArrayList<>();
-    HashMap<Integer, Piste> mapPistes = new HashMap<Integer, Piste>();
+    public HashMap<Integer, Piste> mapPistes = new HashMap<Integer, Piste>();
     final private TourDeControleParfaite tourDeControle;
 
     public Aeroport() {

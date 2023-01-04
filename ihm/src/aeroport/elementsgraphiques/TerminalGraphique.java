@@ -1,7 +1,10 @@
-package aeroport;
+package aeroport.elementsgraphiques;
 
+import aeroport.AvionGraphique;
+import aeroport.Point;
 import core.Avion;
-import core.Terminal;
+import core.elements.Emplacement;
+import core.elements.Terminal;
 import core.protocole.Consigne;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -9,13 +12,13 @@ import javafx.scene.paint.Color;
 
 import java.util.HashMap;
 
-public class TerminalGraphique implements ElementGraphique{
+public class TerminalGraphique implements ElementGraphique {
 
     static String chemin = "file:ihm\\ressources\\img\\terminal.png";
     static Image image;
     Terminal terminal;
     HashMap<Avion.eEtat, Point> mapEtats = new HashMap<>();
-    HashMap<Integer, GateGraphique> mapEmplacements = new HashMap<>();
+    HashMap<Integer, EmplacementGraphique> mapEmplacements = new HashMap<>();
     TaxiwayGraphique TW1;
     TaxiwayGraphique TW2;
 
@@ -51,9 +54,9 @@ public class TerminalGraphique implements ElementGraphique{
         int hauteurEmplacement = hauteurTerminal/7;
         x0 += largeurEmplacement;
         y0 += hauteurEmplacement;
-        for (Terminal.Gate emplacement : terminal.getEmplacements())
+        for (Emplacement emplacement : terminal.getEmplacements())
         {
-            GateGraphique emplacementGraphique = new GateGraphique(emplacement);
+            EmplacementGraphique emplacementGraphique = new EmplacementGraphique(emplacement);
             emplacementGraphique.peindre(gc, x0, y0, largeurEmplacement, hauteurEmplacement);
             mapEmplacements.put(emplacement.hashCode(), emplacementGraphique);
             if (x0 + 3 * largeurEmplacement > (x0Sauv + espace + largeurTerminal))
@@ -88,58 +91,5 @@ public class TerminalGraphique implements ElementGraphique{
         return mapEmplacements.get(consigne.emplacement).obtenirPoint(etat, consigne);
     }
 
-    public static class TaxiwayGraphique implements ElementGraphique {
-
-        static String chemin = "file:ihm\\ressources\\img\\taxiway.png";
-        static Image image;
-        Boolean TW1;
-        HashMap<Avion.eEtat, Point> mapEtats = new HashMap<>();
-        public TaxiwayGraphique(Boolean TW1) {
-            this.TW1 = TW1;
-        }
-
-        public static void chargerImage()
-        {
-            image = new Image(chemin);
-        }
-
-        @Override
-        public void peindre(GraphicsContext gc, int x0, int y0, int w, int h) {
-            gc.drawImage(image, x0, y0, w, h);
-            if (TW1) mapEtats.put(Avion.eEtat.ROULEMENT_ARRIVEE, new Point(x0 + w/2 - AvionGraphique.largeur/2, y0 + h - AvionGraphique.hauteur));
-            else mapEtats.put(Avion.eEtat.ROULEMENT_DEPART, new Point(x0 + w/2 - AvionGraphique.largeur/2, y0 + AvionGraphique.hauteur));
-        }
-
-        @Override
-        public Point obtenirPoint(Avion.eEtat etat, Consigne consigne) {
-            return mapEtats.get(etat);
-        }
-    }
-
-    public static class GateGraphique implements ElementGraphique {
-        Terminal.Gate emplacement;
-        HashMap<Avion.eEtat, Point> mapEtats = new HashMap<>();
-        public GateGraphique(Terminal.Gate emplacement) {
-            this.emplacement = emplacement;
-        }
-
-        @Override
-        public void peindre(GraphicsContext gc, int x0, int y0, int w, int h)
-        {
-            gc.setFill(Color.WHITE);
-            gc.fillRect(x0, y0, w, h);
-            mapEtats.put(Avion.eEtat.DECHARGEMENT_PASSAGERS, new Point(x0 + w/2 - AvionGraphique.largeur/2,
-                    y0 + h/2 - AvionGraphique.hauteur/2));
-        }
-
-        @Override
-        public Point obtenirPoint(Avion.eEtat etat, Consigne consigne)
-        {
-            if (mapEtats.containsKey(etat)) {
-                return mapEtats.get(etat);
-            }
-            return null;
-        }
-    }
 
 }

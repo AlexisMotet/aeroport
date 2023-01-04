@@ -10,8 +10,6 @@ public class Main {
     {
         LogicalDateTime start = new LogicalDateTime("09/12/2016 10:34:47.6789");
         LogicalDateTime end = new LogicalDateTime("11/12/2016 10:34:47.6789");
-        Aeroport aeroport = new Aeroport();
-        new Thread(aeroport.getTourDeControle()).start();
         SimuEngine simuEngine = new SimuEngine(start, end);
 
         simuEngine.addEntity(new Avion(simuEngine));

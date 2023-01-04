@@ -1,9 +1,14 @@
 package aeroport;
 
-import core.Aeroport;
+import aeroport.elementsgraphiques.AeroportGraphique;
+import aeroport.elementsgraphiques.PisteGraphique;
+import aeroport.elementsgraphiques.TaxiwayGraphique;
+import aeroport.elementsgraphiques.TerminalGraphique;
 import core.Avion;
 import core.attente.Loi;
-import core.evenements.Approche;
+import core.attente.Parametre;
+import core.elements.Aeroport;
+import core.elements.Piste;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.engine.SimEntity;
 import enstabretagne.engine.SimuEngine;
@@ -14,16 +19,14 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.skin.SpinnerSkin;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class App extends Application {
@@ -71,7 +74,7 @@ public class App extends Application {
 
         Accordion accordion = new Accordion();
 
-        for (Map.Entry<String, HashMap<String, Loi>> evenement : Avion.evenements.entrySet())
+        for (Map.Entry<String, HashMap<String, Loi>> evenement : Avion.attentesEvenements.entrySet())
         {
             String nom = evenement.getKey();
             TitledPane titledPane = new TitledPane();
@@ -84,16 +87,40 @@ public class App extends Application {
                 Label labelAttente = new Label(nomAttente);
                 vBoxEvenement.getChildren().add(labelAttente);
                 Loi loi = attente.getValue();
-                for (Map.Entry<String, Double> parametre : loi.getParametres().entrySet())
+                Label labelLoi = new Label("Loi" + " " + ":" + " " + loi.getNom());
+                vBoxEvenement.getChildren().add(labelLoi);
+                Label labelEsperance = new Label();
+                Object esperance = loi.getEsperance();
+                if (loi.getEsperance() != null) labelEsperance.setText(String.format("%.2f min", esperance));
+                else labelEsperance.setText("Il n'y rien à espérer");
+                for (Parametre parametre : loi.getParametres())
                 {
                     HBox hBoxParametre = new HBox();
-                    String nomParametre = parametre.getKey();
-                    Label labelParametre = new Label(nomParametre);
+                    Label labelParametre = new Label(parametre.getNom());
                     hBoxParametre.getChildren().add(labelParametre);
-                    Label labelLoi = new Label(loi.getNom());
-                    hBoxParametre.getChildren().add(labelLoi);
+                    Slider slider = new Slider();
+                    double min = parametre.getMin();
+                    double max = parametre.getMax();
+                    slider.setMin(min);
+                    slider.setMax(max);
+                    slider.setShowTickLabels(true);
+                    slider.setShowTickMarks(true);
+                    slider.setMajorTickUnit((max - min)/2);
+                    slider.setValue(parametre.getVal());
+                    Label labelVal = new Label();
+                    labelVal.setText(String.format("%.2f", parametre.getVal()));
+                    slider.valueProperty().addListener((ov, ancienneVal, nouvelleVal) -> {
+                        parametre.setVal((Double) nouvelleVal);
+                        labelVal.setText(String.format("%.2f", parametre.getVal()));
+                        Object espe = loi.getEsperance();
+                        if (loi.getEsperance() != null) labelEsperance.setText(String.format("%.2f min", espe));
+                        else labelEsperance.setText("Il n'y rien à espérer");
+                    });
+                    hBoxParametre.getChildren().add(slider);
+                    hBoxParametre.getChildren().add(labelVal);
                     vBoxEvenement.getChildren().add(hBoxParametre);
                 }
+                vBoxEvenement.getChildren().add(labelEsperance);
             }
             titledPane.setContent(vBoxEvenement);
             titledPane.setExpanded(true);
@@ -121,10 +148,10 @@ public class App extends Application {
         stage.show();
 
         AeroportGraphique.chargerImage();
+        PisteGraphique.chargerImage();
         AvionGraphique.chargerImages();
         TerminalGraphique.chargerImage();
-        TerminalGraphique.TaxiwayGraphique.chargerImage();
-        AeroportGraphique.PisteGraphique.chargerImage();
+        TaxiwayGraphique.chargerImage();
 
         initialisation();
     }
@@ -177,9 +204,9 @@ public class App extends Application {
                 else if (fini) {
                     //Thread t = new Thread(eng);
                     //t.start();
-                    eng.simulationStep(); //§!!!!!!!§§§§§TRES PROBLEMATIQUE
                     labelHeure.setText(eng.getCurrentDate().toString());
                     labelEvenement.setText(eng.getCurrentEvent().toString());
+                    eng.simulationStep(); //§!!!!!!!§§§§§TRES PROBLEMATIQUE
                     attente = true;
                     maj = true;
                     fini = false;
@@ -201,15 +228,15 @@ public class App extends Application {
                     Avion avion = (Avion) simEntity;
                     Point point = aeroportGraphique.obtenirPoint(avion.getEtat(),
                             avion.getConsigne());
+                    AvionGraphique avionGraphique;
                     if (!mapAvions.containsKey(avion)) {
-                        AvionGraphique avionGraphique = new AvionGraphique();
+                        avionGraphique = new AvionGraphique();
                         mapAvions.put(avion, avionGraphique);
-                        if (!Objects.isNull(point)) avionGraphique.sauvegarderFuturePosition(point);
                     }
                     else {
-                        AvionGraphique avionGraphique = mapAvions.get(avion);
-                        if (!Objects.isNull(point)) avionGraphique.sauvegarderFuturePosition(point);
+                        avionGraphique = mapAvions.get(avion);
                     }
+                    if (!Objects.isNull(point)) avionGraphique.sauvegarderFuturePosition(point);
                 }
             }
         }

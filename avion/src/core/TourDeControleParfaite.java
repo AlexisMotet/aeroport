@@ -1,5 +1,9 @@
 package core;
 
+import core.elements.Aeroport;
+import core.elements.Emplacement;
+import core.elements.Piste;
+import core.elements.Terminal;
 import core.protocole.*;
 import core.radio.RadioClient;
 import core.radio.RadioServeur;
@@ -30,54 +34,54 @@ public class TourDeControleParfaite implements Runnable {
                         if (messageVoieArrivee instanceof MessageVoieArrivee) {
                             MessageVoieArrivee msgVoieArrivee =
                                     (MessageVoieArrivee) messageVoieArrivee;
-                            Aeroport.Piste piste = aeroport.mapPistes.get(
+                            Piste piste = aeroport.mapPistes.get(
                                     msgVoieArrivee.getConsigne().getPiste());
-                            piste.occupee = true;
-                            Terminal terminal = piste.mapTerminaux.get(
+                            piste.setOccupee(false);
+                            Terminal terminal = piste.getMapTerminaux().get(
                                     msgVoieArrivee.getConsigne().getTerminal());
-                            terminal.getTW1().occupee = true;
-                            Terminal.Gate emplacement = terminal.mapEmplacements.get(
+                            terminal.getTW1().setOccupee(true);
+                            Emplacement emplacement = terminal.getMapEmplacements().get(
                                     msgVoieArrivee.getConsigne().getEmplacement());
-                            emplacement.occupe = true;
+                            emplacement.setOccupe(true);
                         }
                     }
                     case MessageFinDeVol -> {
                         MessageFinDeVol messageFinDeVol =
                                 (MessageFinDeVol) message;
-                        Aeroport.Piste piste = aeroport.mapPistes.get(
+                        Piste piste = aeroport.mapPistes.get(
                                 messageFinDeVol.getConsigne().getPiste());
-                        piste.occupee = false;
-                        Terminal terminal = piste.mapTerminaux.get(
+                        piste.setOccupee(false);
+                        Terminal terminal = piste.getMapTerminaux().get(
                                 messageFinDeVol.getConsigne().getTerminal());
-                        terminal.getTW1().occupee = false;
+                        terminal.getTW1().setOccupee(false);
                         radio.envoyerMessage(new MessageOk());
                     }
                     case MessageDepart -> {
                         MessageDepart messageDepart =
                                 (MessageDepart) message;
-                        Aeroport.Piste piste = aeroport.mapPistes.get(
+                        Piste piste = aeroport.mapPistes.get(
                                 messageDepart.getConsigne().getPiste());
-                        Terminal terminal = piste.mapTerminaux.get(
+                        Terminal terminal = piste.getMapTerminaux().get(
                                 messageDepart.getConsigne().getTerminal());
                         Message messageCheckVoie = checkVoieDepart(terminal);
                         radio.envoyerMessage(messageCheckVoie);
                         if (messageCheckVoie instanceof MessageOk) {
-                            piste.occupee = true;
-                            terminal.getTW2().occupee = true;
+                            piste.setOccupee(true);
+                            terminal.getTW2().setOccupee(true);
                         }
                     }
                     case MessageDecollage -> {
                         MessageDecollage messageDecollage =
                                 (MessageDecollage) message;
-                        Aeroport.Piste piste = aeroport.mapPistes.get(
+                        Piste piste = aeroport.mapPistes.get(
                                 messageDecollage.getConsigne().getPiste());
-                        piste.occupee = false;
-                        Terminal terminal = piste.mapTerminaux.get(
+                        piste.setOccupee(false);
+                        Terminal terminal = piste.getMapTerminaux().get(
                                 messageDecollage.getConsigne().getTerminal());
-                        terminal.getTW2().occupee = false;
-                        Terminal.Gate emplacement = terminal.mapEmplacements.get(
+                        terminal.getTW2().setOccupee(false);
+                        Emplacement emplacement = terminal.getMapEmplacements().get(
                                 messageDecollage.getConsigne().getEmplacement());
-                        emplacement.occupe = false;
+                        emplacement.setOccupe(false);
                         radio.envoyerMessage(new MessageOk());
                     }
                 }
@@ -89,13 +93,13 @@ public class TourDeControleParfaite implements Runnable {
 
     public Message trouverLaVoieArrivee(){
         if (avionsConnus.size() > 99) return new MessageNok();
-        for (Aeroport.Piste piste : aeroport.getPistes()){
-            if (piste.occupee) continue;
+        for (Piste piste : aeroport.getPistes()){
+            if (piste.getOccupee()) continue;
             for (Terminal terminal : piste.getTerminaux()){
-                if (terminal.getTW1().occupee) continue;
-                for (Terminal.Gate emplacement : terminal.getEmplacements())
+                if (terminal.getTW1().getOccupee()) continue;
+                for (Emplacement emplacement : terminal.getEmplacements())
                 {
-                    if (emplacement.occupe) continue;
+                    if (emplacement.getOccupe()) continue;
                     Consigne consigne = new Consigne(piste.hashCode(),
                             terminal.hashCode(), emplacement.hashCode());
                     avionsConnus.put(avionsConnus.size(), consigne);
@@ -107,9 +111,9 @@ public class TourDeControleParfaite implements Runnable {
     }
 
     public Message checkVoieDepart(Terminal terminal){
-        Aeroport.Piste piste = terminal.piste;
-        if (terminal.getTW2().occupee) return new MessageNok();
-        if (piste.occupee) return new MessageNok();
+        Piste piste = terminal.getPiste();
+        if (terminal.getTW2().getOccupee()) return new MessageNok();
+        if (piste.getOccupee()) return new MessageNok();
         return new MessageOk();
     }
 

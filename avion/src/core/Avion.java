@@ -15,19 +15,19 @@ import java.net.SocketException;
 import java.util.HashMap;
 
 public class Avion extends SimEntity {
-    public static HashMap<String, HashMap<String, Loi>> evenements = new HashMap<>(){{
-        put("NotificationTourDeControleArrivee", NotificationTourDeControleArrivee.attentes);
-        put("Approche", Approche.attentes);
-        put("Atterissage", Atterissage.attentes);
-        put("RoulementArrivee", RoulementArrivee.attentes);
-        put("NotificationTourDeControleFinDeVol", NotificationTourDeControleFinDeVol.attentes);
-        put("DechargementPassagers", DechargementPassagers.attentes);
-        put("Atteri", Atteri.attentes);
-        put("Embarquement", Embarquement.attentes);
-        put("NotificationTourDeControleDepart", NotificationTourDeControleDepart.attentes);
-        put("RoulementDepart", RoulementDepart.attentes);
-        put("Decollage", Decollage.attentes);
-        put("NotificationTourDeControleDecollage", NotificationTourDeControleDecollage.attentes);
+    public static final HashMap<String, HashMap<String, Loi>> attentesEvenements = new HashMap<>(){{
+        put("NotificationTourDeControleArrivee", NotificationTourDeControleArrivee.getAttentes());
+        put("Approche", Approche.getAttentes());
+        put("Atterissage", Atterissage.getAttentes());
+        put("RoulementArrivee", RoulementArrivee.getAttentes());
+        put("NotificationTourDeControleFinDeVol", NotificationTourDeControleFinDeVol.getAttentes());
+        put("DechargementPassagers", DechargementPassagers.getAttentes());
+        put("Atteri", Atteri.getAttentes());
+        put("Embarquement", Embarquement.getAttentes());
+        put("NotificationTourDeControleDepart", NotificationTourDeControleDepart.getAttentes());
+        put("RoulementDepart", RoulementDepart.getAttentes());
+        put("Decollage", Decollage.getAttentes());
+        put("NotificationTourDeControleDecollage", NotificationTourDeControleDecollage.getAttentes());
     }};
 
     public enum eEtat {
@@ -36,7 +36,6 @@ public class Avion extends SimEntity {
         ATTERISSAGE,
         ROULEMENT_ARRIVEE,
         DECHARGEMENT_PASSAGERS,
-        DECHARGEMENT_MATERIEL,
         ATTERI,
         EMBARQUEMENT,
         ROULEMENT_DEPART,
@@ -60,8 +59,7 @@ public class Avion extends SimEntity {
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
-        LogicalDateTime date = getEngine().getCurrentDate().add(LogicalDuration.ofMinutes(5));
-        getEngine().postEvent(new NotificationTourDeControleArrivee(this, date));
+        getEngine().postEvent(new NotificationTourDeControleArrivee(this, getEngine().getCurrentDate()));
     }
 
     public Message utiliserRadio(Message msg) throws IOException,
