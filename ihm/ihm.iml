@@ -3,12 +3,14 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/TopDown_Planes_Game_Assets_without_source_by_unlucky_studio" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/ressources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="14" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="avion" />
     <orderEntry type="module" module-name="TD_1_base_common" />
-    <orderEntry type="library" name="libjavafx" level="project" />
+    <orderEntry type="library" name="libjavaf" level="project" />
   </component>
 </module>
