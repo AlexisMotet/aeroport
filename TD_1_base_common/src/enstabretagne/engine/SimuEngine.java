@@ -11,7 +11,7 @@ import java.util.ListIterator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class SimuEngine {
+public class SimuEngine implements Runnable {
     final private SortedList<SimEvent> sortedEventList;
     final private List<SimEntity> entityList;
     private LogicalDateTime currentDate;
@@ -29,8 +29,8 @@ public class SimuEngine {
         sortedEventList.add(simEvent);
     }
 
-    public void postEvent(SimEntity entity, LogicalDateTime date, Runnable action) {
-        postEvent(new LambdaSimEvent(entity, date, action));
+    public SimEvent getCurrentEvent() {
+        return sortedEventList.first();
     }
 
     public LogicalDateTime getCurrentDate() {
@@ -39,7 +39,7 @@ public class SimuEngine {
 
     public boolean simulationStep() {
         if (sortedEventList.size() == 0) return false;
-        SimEvent currentEvent = sortedEventList.first();
+        SimEvent currentEvent = getCurrentEvent();
         currentDate = currentEvent.getDateOccurence();
         if (currentDate.compareTo(endDate) > 0) return false;
         sortedEventList.remove(currentEvent);
@@ -68,4 +68,8 @@ public class SimuEngine {
         return result;
     }
 
+    @Override
+    public void run() {
+        simulationStep();
+    }
 }

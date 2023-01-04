@@ -1,76 +1,165 @@
 package aeroport;
 
+import core.Aeroport;
 import core.Avion;
-import core.TourDeControleParfaite;
+import core.attente.Loi;
+import core.evenements.Approche;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.engine.SimEntity;
 import enstabretagne.engine.SimuEngine;
 import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.Label;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.sql.SQLOutput;
-import java.util.*;
 
-import javafx.animation.Timeline;
-import javafx.util.Duration;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 public class App extends Application {
 
-    static SimuEngine eng;
-    static Piste pisteTW1, pisteTW2;
-    static Canvas canvas_background;
-    static Canvas canvas_avion;
-    static GraphicsContext gc_bg;
-    static GraphicsContext gc_av;
+    SimuEngine eng;
+    Canvas canvas_background;
+    Canvas canvas_avion;
+    GraphicsContext gc_bg;
+    GraphicsContext gc_av;
+    int hauteur = 600;
+    int largeur = 500;
 
+    AeroportGraphique aeroportGraphique;
 
-    static EnumMap<Avion.enumPosition, Integer> mapPosition;
-    static HashMap<Avion, AvionGraphique> mapAvion;
+    HashMap<Avion, AvionGraphique> mapAvions = new HashMap<>();
+    VBox vBox;
 
+    HBox hBoxHeure;
+    Label labelHeure;
+
+    HBox hBoxEvenement;
+    Label labelEvenement;
+
+    ArrayList<HBox> hBoxActions = new ArrayList<>();
+    ArrayList<Label> labelActions = new ArrayList<>();
+    HashMap<Avion, InfoAvion> mapInfo;
 
     @Override
-    public void start(Stage stage) throws IOException {
-        StackPane pane = new StackPane();
+    public void start(Stage stage) {
+        HBox hBox = new HBox();
 
-        canvas_background = new Canvas(300,300);
+        vBox = new VBox();
+        mapInfo = new HashMap<>();
+
+        labelHeure = new Label();
+        hBoxHeure = new HBox();
+        hBoxHeure.getChildren().add(labelHeure);
+
+        labelEvenement = new Label();
+        hBoxEvenement = new HBox();
+        hBoxEvenement.getChildren().add(labelEvenement);
+
+        vBox.getChildren().add(hBoxHeure);
+        vBox.getChildren().add(hBoxEvenement);
+
+        Accordion accordion = new Accordion();
+
+        for (Map.Entry<String, HashMap<String, Loi>> evenement : Avion.evenements.entrySet())
+        {
+            String nom = evenement.getKey();
+            TitledPane titledPane = new TitledPane();
+            titledPane.setText(nom);
+            VBox vBoxEvenement = new VBox();
+            HashMap<String, Loi> attentes = evenement.getValue();
+            for (Map.Entry<String, Loi> attente : attentes.entrySet())
+            {
+                String nomAttente = attente.getKey();
+                Label labelAttente = new Label(nomAttente);
+                vBoxEvenement.getChildren().add(labelAttente);
+                Loi loi = attente.getValue();
+                for (Map.Entry<String, Double> parametre : loi.getParametres().entrySet())
+                {
+                    HBox hBoxParametre = new HBox();
+                    String nomParametre = parametre.getKey();
+                    Label labelParametre = new Label(nomParametre);
+                    hBoxParametre.getChildren().add(labelParametre);
+                    Label labelLoi = new Label(loi.getNom());
+                    hBoxParametre.getChildren().add(labelLoi);
+                    vBoxEvenement.getChildren().add(hBoxParametre);
+                }
+            }
+            titledPane.setContent(vBoxEvenement);
+            titledPane.setExpanded(true);
+            accordion.getPanes().add(titledPane);
+        }
+        vBox.getChildren().add(accordion);
+
+        StackPane stackPane = new StackPane();
+
+        canvas_background = new Canvas(largeur, hauteur);
         gc_bg = canvas_background.getGraphicsContext2D();
 
-        canvas_avion = new Canvas(300,300);
+        canvas_avion = new Canvas(largeur, hauteur);
         gc_av = canvas_avion.getGraphicsContext2D();
 
-        pane.getChildren().add(canvas_background);
-        pane.getChildren().add(canvas_avion);
+        stackPane.getChildren().add(canvas_background);
+        stackPane.getChildren().add(canvas_avion);
 
-        Scene s = new Scene(pane, 300, 300);
+        hBox.getChildren().add(vBox);
+        hBox.getChildren().add(stackPane);
+
+        Scene s = new Scene(hBox, largeur, hauteur);
         stage.setScene(s);
         stage.setTitle("Aeroport");
         stage.show();
 
+        AeroportGraphique.chargerImage();
+        AvionGraphique.chargerImages();
+        TerminalGraphique.chargerImage();
+        TerminalGraphique.TaxiwayGraphique.chargerImage();
+        AeroportGraphique.PisteGraphique.chargerImage();
+
         initialisation();
     }
 
-    private static void initialisation()
+    private void initialisation()
     {
-        mapAvion = new HashMap<>();
-        mapPosition = new  EnumMap<>(Avion.enumPosition.class);
-        mapPosition.put(Avion.enumPosition.DEBUT_PISTE, 10);
-        mapPosition.put(Avion.enumPosition.MILIEU_PISTE, 100);
-        mapPosition.put(Avion.enumPosition.FIN_PISTE, 200);
-        peindreAeroport();
         LogicalDateTime start = new LogicalDateTime("09/12/2016 10:34:47.6789");
         LogicalDateTime end = new LogicalDateTime("11/12/2016 10:34:47.6789");
-        App.eng = new SimuEngine(start, end);
-        TourDeControleParfaite tdc = new TourDeControleParfaite();
-        Avion avion = new Avion(eng, tdc);
-        eng.addEntity(avion);
+        Aeroport aeroport = new Aeroport();
+        aeroportGraphique = new AeroportGraphique(aeroport);
+        aeroportGraphique.peindre(gc_bg, 0, 0, largeur, hauteur);
+        eng = new SimuEngine(start, end);
+        new Thread(aeroport.getTourDeControle()).start();
+
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+        eng.addEntity(new Avion(eng));
+
         AnimationTimer timer = new AnimationTimer() {
             Boolean fini = true;
             Boolean attente = false;
@@ -86,7 +175,11 @@ public class App extends Application {
                     }
                 }
                 else if (fini) {
-                    eng.simulationStep();
+                    //Thread t = new Thread(eng);
+                    //t.start();
+                    eng.simulationStep(); //§!!!!!!!§§§§§TRES PROBLEMATIQUE
+                    labelHeure.setText(eng.getCurrentDate().toString());
+                    labelEvenement.setText(eng.getCurrentEvent().toString());
                     attente = true;
                     maj = true;
                     fini = false;
@@ -99,77 +192,37 @@ public class App extends Application {
         };
         timer.start();
     }
-    public static class AvionGraphique {
-        int derniere_position;
-        int position;
-        Piste piste;
-        public AvionGraphique(int position, Piste piste) {
-            this.position = position;
-            this.piste = piste;
-        }
-        public void peindreAvion(GraphicsContext gc, Color couleur, int position)
-        {
-            if (Objects.isNull(piste)) return;
-            gc.setFill(couleur);
-            gc.fillRect(piste.x0 + (float) piste.largeur / 2 - 10, position, 20, 20);
-        }
 
-        public void sauvegarderPosition()
-        {
-            this.position = derniere_position;
-        }
-    }
-
-    public static void peindreAeroport()
-    {
-        gc_bg.setFill(Color.GREEN);
-        gc_bg.fillRect(0,0,300,300);
-
-        pisteTW1 = new Piste(0, 100, 300);
-        pisteTW1.peindrePiste(gc_bg, Color.GREY);
-
-        pisteTW2 = new Piste(200, 100, 300);
-        pisteTW2.peindrePiste(gc_bg, Color.GREY);
-    }
-
-    public static Boolean graphic(Boolean maj)
+    public Boolean graphic(Boolean maj)
     {
         if (maj) {
-            System.out.println("maj");
             for (SimEntity simEntity : eng.getEntityList()) {
                 if (simEntity instanceof Avion) {
                     Avion avion = (Avion) simEntity;
-                    Piste piste;
-                    int position = mapPosition.get(avion.position);
-                    switch (avion.piste) {
-                        case TW1 -> piste = pisteTW1;
-                        case TW2 -> piste = pisteTW2;
-                        default -> piste = null;
+                    Point point = aeroportGraphique.obtenirPoint(avion.getEtat(),
+                            avion.getConsigne());
+                    if (!mapAvions.containsKey(avion)) {
+                        AvionGraphique avionGraphique = new AvionGraphique();
+                        mapAvions.put(avion, avionGraphique);
+                        if (!Objects.isNull(point)) avionGraphique.sauvegarderFuturePosition(point);
                     }
-                    if (!mapAvion.containsKey(avion)) {
-                        mapAvion.put(avion, new AvionGraphique(position, piste));
-                    } else {
-                        AvionGraphique avionGraphique = mapAvion.get(avion);
-                        avionGraphique.piste = piste;
-                        avionGraphique.position = position;
+                    else {
+                        AvionGraphique avionGraphique = mapAvions.get(avion);
+                        if (!Objects.isNull(point)) avionGraphique.sauvegarderFuturePosition(point);
                     }
                 }
             }
         }
-
         int c = 0;
-        gc_av.clearRect(0, 0, canvas_avion.getWidth(), canvas_avion.getHeight());
-        for (Map.Entry<Avion, AvionGraphique> entree : mapAvion.entrySet()) {
+        gc_av.clearRect(0, 0, largeur, hauteur);
+        for (Map.Entry<Avion, AvionGraphique> entree : mapAvions.entrySet()) {
             AvionGraphique avionGraphique = entree.getValue();
-            if (avionGraphique.derniere_position == avionGraphique.position) {
+            Avion avion = entree.getKey();
+            if (avionGraphique.avancerEtPeindreAvion(gc_av, avion.getEtat())) {
                 c++;
-                avionGraphique.sauvegarderPosition();
             }
-            if (avionGraphique.derniere_position > avionGraphique.position) avionGraphique.derniere_position--;
-            if (avionGraphique.derniere_position < avionGraphique.position) avionGraphique.derniere_position++;
-            avionGraphique.peindreAvion(gc_av, Color.WHITE, avionGraphique.derniere_position);
         }
-        return (c == mapAvion.size());
+        return (c == mapAvions.size());
     }
 
     public static void main(String[] args)
