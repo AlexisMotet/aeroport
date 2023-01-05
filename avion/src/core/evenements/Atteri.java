@@ -13,9 +13,8 @@ import java.util.HashMap;
 
 public class Atteri extends EvenementAvion {
 
-    static private final Loi attenteEmbarquement = new Uniforme(10, 3 );
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Embarquement", attenteEmbarquement);
+        put("Attente Embarquement", new Uniforme());
     }};
     private final Avion avion;
     public Atteri(SimEntity entite, LogicalDateTime dateOccurence) {
@@ -35,8 +34,8 @@ public class Atteri extends EvenementAvion {
     @Override
     public void process() {
         avion.setEtat(Avion.eEtat.ATTERI);
-        LogicalDateTime date = getDateOccurence().add(
-                LogicalDuration.ofMinutes(attenteEmbarquement.next().longValue()));
+        LogicalDateTime date = getDateOccurence().add(LogicalDuration.ofMinutes(
+                attentes.get("Attente Embarquement").next()));
         avion.getEngine().postEvent(new Embarquement(getEntity(), date));
     }
 }

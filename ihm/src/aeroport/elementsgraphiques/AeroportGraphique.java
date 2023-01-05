@@ -7,7 +7,9 @@ import core.elements.Aeroport;
 import core.elements.Piste;
 import core.elements.Terminal;
 import core.protocole.Consigne;
+import javafx.scene.AccessibleAction;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Accordion;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
@@ -30,13 +32,13 @@ public class AeroportGraphique implements ElementGraphique {
     }
 
     @Override
-    public void peindre(GraphicsContext gc, int x0, int y0, int w, int h) {
-        int hauteurCiel = h/6;
+    public void peindre(GraphicsContext gc, double x0, double y0, double w, double h) {
+        double hauteurCiel = h/6;
         gc.setFill(Color.SKYBLUE);
         gc.fillRect(x0, y0, w, hauteurCiel);
         y0 += hauteurCiel;
         gc.drawImage(image, x0, y0, w, h);
-        int hauteurAeroport = h - h/6;
+        double hauteurAeroport = h - h/6;
         for (Piste piste : aeroport.getPistes())
         {
             PisteGraphique pisteGraphique = new PisteGraphique(piste);
@@ -52,3 +54,4 @@ public class AeroportGraphique implements ElementGraphique {
         return piste.obtenirPoint(etat, consigne);
     }
 }
+

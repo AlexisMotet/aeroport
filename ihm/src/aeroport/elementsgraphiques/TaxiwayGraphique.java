@@ -2,6 +2,7 @@ package aeroport.elementsgraphiques;
 
 import aeroport.AvionGraphique;
 import aeroport.Point;
+import canvas.CanvasAvion;
 import core.Avion;
 import core.protocole.Consigne;
 import javafx.scene.canvas.GraphicsContext;
@@ -25,10 +26,11 @@ public class TaxiwayGraphique implements ElementGraphique {
     }
 
     @Override
-    public void peindre(GraphicsContext gc, int x0, int y0, int w, int h) {
+    public void peindre(GraphicsContext gc, double x0, double y0, double w, double h) {
         gc.drawImage(image, x0, y0, w, h);
-        if (TW1) mapEtats.put(Avion.eEtat.ROULEMENT_ARRIVEE, new Point(x0 + w/2 - AvionGraphique.largeur/2, y0 + h - AvionGraphique.hauteur));
-        else mapEtats.put(Avion.eEtat.ROULEMENT_DEPART, new Point(x0 + w/2 - AvionGraphique.largeur/2, y0 + AvionGraphique.hauteur));
+        Point point = new Point(x0 + w/2 - CanvasAvion.largeurAvion/2, y0 + h - CanvasAvion.hauteurAvion);
+        if (TW1) mapEtats.put(Avion.eEtat.ROULEMENT_ARRIVEE, point);
+        else mapEtats.put(Avion.eEtat.ROULEMENT_DEPART, point);
     }
 
     @Override

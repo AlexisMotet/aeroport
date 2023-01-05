@@ -2,6 +2,7 @@ package aeroport.elementsgraphiques;
 
 import aeroport.AvionGraphique;
 import aeroport.Point;
+import canvas.CanvasAvion;
 import core.Avion;
 import core.elements.Emplacement;
 import core.elements.Terminal;
@@ -31,27 +32,27 @@ public class TerminalGraphique implements ElementGraphique {
     }
 
     @Override
-    public void peindre(GraphicsContext gc, int x0, int y0, int w, int h)
+    public void peindre(GraphicsContext gc, double x0, double y0, double w, double h)
     {
-        int hauteurTaxiway = h/2;
-        int x0Sauv = x0;
-        int y0Sauv = y0;
+        double hauteurTaxiway = h/2;
+        double x0Sauv = x0;
+        double y0Sauv = y0;
         y0 += hauteurTaxiway;
-        int hauteurTerminal = (h - hauteurTaxiway) * 2/3;
-        int largeurTerminal = w/2;
-        while (largeurTerminal % 7 != 0)
+        double hauteurTerminal = (h - hauteurTaxiway) * 2/3;
+        double largeurTerminal = w/2;
+        while ((int)largeurTerminal % 7 != 0)
         {
             largeurTerminal ++;
         }
-        while (hauteurTerminal % 7 != 0)
+        while ((int)hauteurTerminal % 7 != 0)
         {
             hauteurTerminal ++;
         }
-        int espace = (w - largeurTerminal)/2;
+        double espace = (w - largeurTerminal)/2;
         gc.drawImage(image, x0 + espace, y0, largeurTerminal, hauteurTerminal);
         x0 += espace;
-        int largeurEmplacement = largeurTerminal/7;
-        int hauteurEmplacement = hauteurTerminal/7;
+        double largeurEmplacement = largeurTerminal/7;
+        double hauteurEmplacement = hauteurTerminal/7;
         x0 += largeurEmplacement;
         y0 += hauteurEmplacement;
         for (Emplacement emplacement : terminal.getEmplacements())
@@ -71,7 +72,7 @@ public class TerminalGraphique implements ElementGraphique {
         }
         x0 = x0Sauv;
         y0 = y0Sauv;
-        int largeurTaxiway = w/10;
+        double largeurTaxiway = w/10;
 
         TW1 = new TaxiwayGraphique(true);
         TW2 = new TaxiwayGraphique(false);
@@ -79,8 +80,10 @@ public class TerminalGraphique implements ElementGraphique {
         TW1.peindre(gc, x0 + espace + largeurTaxiway, y0, largeurTaxiway, hauteurTaxiway);
         TW2.peindre(gc, x0 + w - (espace + 2 * largeurTaxiway), y0, largeurTaxiway, hauteurTaxiway);
 
-        mapEtats.put(Avion.eEtat.ATTERISSAGE, new Point(x0 + espace + largeurTaxiway + largeurTaxiway/2 - AvionGraphique.largeur/2,
-                y0 - AvionGraphique.hauteur/2));
+        Point point = new Point(x0 + espace + largeurTaxiway + largeurTaxiway/2 - CanvasAvion.largeurAvion/2,
+                y0 - CanvasAvion.hauteurAvion/2);
+
+        mapEtats.put(Avion.eEtat.ATTERISSAGE, point);
     }
 
     public Point obtenirPoint(Avion.eEtat etat, Consigne consigne)

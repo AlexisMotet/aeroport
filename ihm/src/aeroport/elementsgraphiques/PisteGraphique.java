@@ -2,6 +2,7 @@ package aeroport.elementsgraphiques;
 
 import aeroport.AvionGraphique;
 import aeroport.Point;
+import canvas.CanvasAvion;
 import core.Avion;
 import core.elements.Piste;
 import core.elements.Terminal;
@@ -28,15 +29,15 @@ public class PisteGraphique implements ElementGraphique{
         image = new Image(chemin);
     }
     @Override
-    public void peindre(GraphicsContext gc, int x0, int y0, int w, int h)
+    public void peindre(GraphicsContext gc, double x0, double y0, double w, double h)
     {
-        int hauteurPiste = h/3;
+        double hauteurPiste = h/3;
         gc.drawImage(image, x0, y0, w, hauteurPiste);
-        mapEtats.put(Avion.eEtat.APPROCHE, new Point(x0 + AvionGraphique.largeur,
-                y0 + hauteurPiste/2 - AvionGraphique.hauteur/2));
-        mapEtats.put(Avion.eEtat.DECOLLAGE, new Point(x0 + AvionGraphique.largeur,
-                y0 + hauteurPiste/2 - AvionGraphique.hauteur/2));
-        int hauteurTerminal = h - hauteurPiste;
+        Point point = new Point(x0 + CanvasAvion.largeurAvion,
+                y0 + hauteurPiste/2 - CanvasAvion.hauteurAvion/2);
+        mapEtats.put(Avion.eEtat.APPROCHE, point);
+        mapEtats.put(Avion.eEtat.DECOLLAGE, point);
+        double hauteurTerminal = h - hauteurPiste;
         for (Terminal terminal : piste.getTerminaux())
         {
             TerminalGraphique terminalGraphique = new TerminalGraphique(terminal);

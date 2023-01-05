@@ -1,5 +1,6 @@
 package aeroport;
 
+import canvas.CanvasAvion;
 import com.sun.prism.shader.Solid_TextureYV12_AlphaTest_Loader;
 import core.*;
 import javafx.scene.SnapshotParameters;
@@ -49,10 +50,6 @@ public class AvionGraphique {
 
     String type;
     static HashMap<String, Image> mapImages = new HashMap<>();
-    public final static int largeur = 40;
-    public final static int hauteur = 40;
-    public int futurx = 0;
-    public int futury = 0;
     private int x = 0;
     private int y = 0;
 
@@ -83,40 +80,36 @@ public class AvionGraphique {
             mapImages.put(chemin + nom + "3.png", new Image(chemin + nom + "3.png"));
         }
     }
-    public void sauvegarderFuturePosition(Point point)
-    {
-        futurx = point.x;
-        futury = point.y;
-    }
-    public Boolean avancerEtPeindreAvion(GraphicsContext gc, Avion.eEtat etat)
+
+    public Boolean avancerEtPeindreAvion(GraphicsContext gc, Point point)
     {
         int vitesse = 1;
-        if (etat == Avion.eEtat.APPROCHE)
-        {
-            vitesse = 1;
+        if (point == null) {
+            return true;
         }
-        if (futurx - x > 0)
+        if (point.getX() - x > 0)
         {
             x += vitesse;
             r = 1;
         }
-        else if (y - futury > 0)
+        else if (y - point.getY() > 0)
         {
             y -= vitesse;
             r = 0;
         }
-        else if (x - futurx > 0)
+        else if (x - point.getX() > 0)
         {
             x -= vitesse;
             r = 3;
         }
-        else if (futury - y > 0)
+        else if (point.getY() - y > 0)
         {
             y += vitesse;
             r = 2;
         }
-        gc.drawImage(images.get(r), x, y, largeur, hauteur);
-        return (x == futurx && y == futury);
+        gc.drawImage(images.get(r),  x, y,
+                CanvasAvion.largeurAvion, CanvasAvion.hauteurAvion);
+        return (x == point.getX() && y == point.getY());
     }
 
     public static void main(String[] args)

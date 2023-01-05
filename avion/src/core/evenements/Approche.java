@@ -13,9 +13,8 @@ public class Approche extends EvenementAvion
 {
     private final Avion avion;
 
-    static private final Loi attenteAtterissage = new Uniforme(10, 3 );
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Atterissage", attenteAtterissage);
+        put("Attente Atterissage", new Uniforme());
     }};
 
     public Approche(SimEntity entite, LogicalDateTime dateOccurence)
@@ -38,7 +37,7 @@ public class Approche extends EvenementAvion
     {
         avion.setEtat(Avion.eEtat.APPROCHE);
         LogicalDateTime date = getDateOccurence().add(LogicalDuration.ofMinutes(
-                attenteAtterissage.next().longValue()));
+                attentes.get("Attente Atterissage").next()));
         avion.getEngine().postEvent(new Atterissage(getEntity(), date));
     }
 }

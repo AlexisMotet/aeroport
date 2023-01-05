@@ -9,11 +9,14 @@ public class Triangle extends Loi {
     private final Parametre a = new Parametre("a", 0, 10);
     private final Parametre b = new Parametre("b", 0, 10);
     private final Parametre c = new Parametre("c", 0, 10);
+    public static double A = 2;
+    public static double B = 5;
+    public static double C = 7;
 
-    public Triangle(double a, double b, double c) {
-        this.a.setVal(a);
-        this.b.setVal(b);
-        this.c.setVal(c);
+    public Triangle() {
+        this.a.setVal(A);
+        this.b.setVal(B);
+        this.c.setVal(C);
     }
     private final ArrayList<Parametre> parametres = new ArrayList<>(){{
         add(a);
@@ -22,13 +25,20 @@ public class Triangle extends Loi {
     }};
 
     @Override
-    public Double next(){
-        return getRandom().nextTriangle(a.getVal(), b.getVal(), c.getVal());
+    public long next(){
+        if (a.getVal() < b.getVal() && a.getVal() <= c.getVal() && c.getVal() <= b.getVal())
+        {
+            return (long) getRandom().nextTriangle(a.getVal(), b.getVal(), c.getVal());
+        }
+        else
+        {
+            return 99;
+        }
     }
 
     @Override
-    public String getNom() {
-        return "Triangle";
+    public eLoi getNom() {
+        return eLoi.TRIANGLE;
     }
 
     @Override
@@ -38,13 +48,13 @@ public class Triangle extends Loi {
 
     public Double getEsperance()
     {
-        if (a.getVal() > b.getVal())
+        if (a.getVal() < b.getVal() && a.getVal() <= c.getVal() && c.getVal() <= b.getVal())
         {
-            return null;
+            return (a.getVal() + b.getVal() + c.getVal())/3;
         }
         else
         {
-            return (a.getVal() + b.getVal())/2;
+            return (double) 99;
         }
     }
 }

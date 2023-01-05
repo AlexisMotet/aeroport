@@ -17,11 +17,9 @@ import java.util.HashMap;
 
 public class NotificationTourDeControleFinDeVol extends EvenementAvion
 {
-    static private final Loi attenteDechargementPassagers = new Uniforme(10, 3 );
-    static private final Loi attenteNotificationTourDeControleFinDeVol = new Uniforme(10, 3 );
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Dechargement Passagers", attenteDechargementPassagers);
-        put("Attente Notification Tour De Controle Fin De Vol", attenteNotificationTourDeControleFinDeVol);
+        put("Attente Dechargement Passagers", new Uniforme());
+        put("Attente Notification Tour De Controle Fin De Vol", new Uniforme());
     }};
     private final Avion avion;
     public NotificationTourDeControleFinDeVol(SimEntity entite, LogicalDateTime dateOccurence) {
@@ -48,12 +46,12 @@ public class NotificationTourDeControleFinDeVol extends EvenementAvion
             if (msg == eMessage.MessageOk)
             {
                 LogicalDateTime date = getDateOccurence().add(
-                        LogicalDuration.ofMinutes(attenteDechargementPassagers.next().longValue()));
+                        LogicalDuration.ofMinutes(attentes.get("Attente Dechargement Passagers").next()));
                 avion.getEngine().postEvent(new DechargementPassagers(getEntity(), date));
             } else
             {
-                LogicalDateTime date = getDateOccurence().add(LogicalDuration.ofMinutes(
-                        attenteNotificationTourDeControleFinDeVol.next().longValue()));
+                LogicalDateTime date = getDateOccurence().add(
+                        LogicalDuration.ofMinutes(attentes.get("Attente Notification Tour De Controle Fin De Vol").next()));
                 avion.getEngine().postEvent(new NotificationTourDeControleFinDeVol(getEntity(), date));
             }
         } catch (IOException | ClassNotFoundException e) {

@@ -7,14 +7,14 @@ import java.util.HashMap;
 
 public abstract class Loi {
 
-    public abstract String getNom();
+    public abstract eLoi getNom();
     private final MoreRandom random = new MoreRandom();
     public MoreRandom getRandom() {
         return random;
     }
     public abstract ArrayList<Parametre> getParametres();
 
-    public abstract Double next();
+    public abstract long next();
 
     public abstract Double getEsperance();
 

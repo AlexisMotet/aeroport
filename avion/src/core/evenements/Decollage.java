@@ -12,9 +12,8 @@ import enstabretagne.engine.SimEvent;
 import java.util.HashMap;
 
 public class Decollage extends EvenementAvion {
-    static private final Loi attenteNotificationTourDeControleDecollage = new Uniforme(10, 3 );
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Notification Tour De Controle Decollage", attenteNotificationTourDeControleDecollage);
+        put("Attente Notification Tour De Controle Decollage", new Uniforme());
     }};
     private final Avion avion;
 
@@ -37,7 +36,7 @@ public class Decollage extends EvenementAvion {
     {
         avion.setEtat(Avion.eEtat.DECOLLAGE);
         LogicalDateTime date = getDateOccurence().add(
-                LogicalDuration.ofMinutes(attenteNotificationTourDeControleDecollage.next().longValue()));
+                LogicalDuration.ofMinutes(attentes.get("Attente Notification Tour De Controle Decollage").next()));
         avion.getEngine().postEvent(new NotificationTourDeControleDecollage(getEntity(), date));
     }
 }

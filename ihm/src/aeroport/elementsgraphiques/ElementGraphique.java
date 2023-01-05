@@ -7,6 +7,6 @@ import javafx.scene.canvas.GraphicsContext;
 
 public interface ElementGraphique {
 
-    void peindre(GraphicsContext gc, int x0, int y0, int w, int h);
+    void peindre(GraphicsContext gc, double x0, double y0, double w, double h);
     Point obtenirPoint(Avion.eEtat etat, Consigne consigne);
 }

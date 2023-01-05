@@ -18,11 +18,9 @@ import java.util.HashMap;
 
 public class NotificationTourDeControleDepart extends EvenementAvion {
 
-    static private final Loi attenteRoulementDepart = new Uniforme(10, 3 );
-    static private final Loi attenteNotificationTourDeControleDepart = new Uniforme(10, 3 );
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Depart", attenteRoulementDepart);
-        put("Attente Notification Tour De Controle Depart", attenteNotificationTourDeControleDepart);
+        put("Attente Roulement Depart", new Uniforme());
+        put("Attente Notification Tour De Controle Depart", new Uniforme());
     }};
 
     private final Avion avion;
@@ -50,12 +48,12 @@ public class NotificationTourDeControleDepart extends EvenementAvion {
             if (msg == eMessage.MessageOk)
             {
                 LogicalDateTime date = getDateOccurence().add(
-                        LogicalDuration.ofMinutes(attenteRoulementDepart.next().longValue()));
+                        LogicalDuration.ofMinutes(attentes.get("Attente Roulement Depart").next()));
                 avion.getEngine().postEvent(new RoulementDepart(getEntity(), date));
             } else
             {
                 LogicalDateTime date = getDateOccurence().add(
-                        LogicalDuration.ofMinutes(attenteNotificationTourDeControleDepart.next().longValue()));
+                        LogicalDuration.ofMinutes(attentes.get("Attente Notification Tour De Controle Depart").next()));
                 avion.getEngine().postEvent(new NotificationTourDeControleDepart(getEntity(), date));
             }
         } catch (IOException | ClassNotFoundException e) {

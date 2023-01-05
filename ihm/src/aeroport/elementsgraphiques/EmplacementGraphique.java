@@ -2,6 +2,7 @@ package aeroport.elementsgraphiques;
 
 import aeroport.AvionGraphique;
 import aeroport.Point;
+import canvas.CanvasAvion;
 import core.Avion;
 import core.elements.Emplacement;
 import core.protocole.Consigne;
@@ -18,12 +19,16 @@ public class EmplacementGraphique implements ElementGraphique {
     }
 
     @Override
-    public void peindre(GraphicsContext gc, int x0, int y0, int w, int h)
+    public void peindre(GraphicsContext gc, double x0, double y0, double w, double h)
     {
         gc.setFill(Color.WHITE);
         gc.fillRect(x0, y0, w, h);
-        mapEtats.put(Avion.eEtat.DECHARGEMENT_PASSAGERS, new Point(x0 + w/2 - AvionGraphique.largeur/2,
-                y0 + h/2 - AvionGraphique.hauteur/2));
+        Point point = new Point(x0 + w/2 - CanvasAvion.largeurAvion/2,
+                y0 + h/2 - CanvasAvion.hauteurAvion/2);
+        mapEtats.put(Avion.eEtat.DECHARGEMENT_PASSAGERS, point);
+        mapEtats.put(Avion.eEtat.ATTERI, point);
+        mapEtats.put(Avion.eEtat.EMBARQUEMENT, point);
+
     }
 
     @Override

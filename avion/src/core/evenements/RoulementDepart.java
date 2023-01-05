@@ -12,9 +12,8 @@ import enstabretagne.engine.SimEvent;
 import java.util.HashMap;
 
 public class RoulementDepart extends EvenementAvion {
-    static private final Loi attenteDecollage = new Uniforme(10, 3 );
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Decollage", attenteDecollage);
+        put("Attente Decollage", new Uniforme());
     }};
     private final Avion avion;
     public RoulementDepart(SimEntity entite, LogicalDateTime dateOccurence) {
@@ -35,7 +34,7 @@ public class RoulementDepart extends EvenementAvion {
     public void process() {
         avion.setEtat(Avion.eEtat.ROULEMENT_DEPART);
         LogicalDateTime date = getDateOccurence().add(
-                LogicalDuration.ofMinutes(attenteDecollage.next().longValue()));
+                LogicalDuration.ofMinutes(attentes.get("Attente Decollage").next()));
         avion.getEngine().postEvent(new Decollage(getEntity(), date));
     }
 }
