@@ -6,6 +6,8 @@ import aeroport.elementsgraphiques.TaxiwayGraphique;
 import aeroport.elementsgraphiques.TerminalGraphique;
 import canvas.CanvasAeroport;
 import canvas.CanvasAvion;
+import canvas.CanvasNuit;
+import canvas.ResizableCanvas;
 import core.Avion;
 import core.attente.*;
 import core.elements.Aeroport;
@@ -27,6 +29,7 @@ import javafx.scene.control.skin.SpinnerSkin;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import javax.swing.*;
@@ -35,6 +38,8 @@ import java.util.*;
 public class App extends Application {
 
     SimuEngine eng;
+
+    CanvasNuit canvasNuit;
     CanvasAvion canvasAvion;
     CanvasAeroport canvasAeroport;
     int hauteur = 600;
@@ -117,6 +122,8 @@ public class App extends Application {
 
         StackPane stackPane = new StackPane();
 
+
+
         hBox.getChildren().add(vBox);
         hBox.getChildren().add(stackPane);
 
@@ -130,6 +137,7 @@ public class App extends Application {
         AvionGraphique.chargerImages();
         TerminalGraphique.chargerImage();
         TaxiwayGraphique.chargerImage();
+
 
         initialisation(stackPane);
     }
@@ -161,18 +169,22 @@ public class App extends Application {
 
     private void initialisation(StackPane stackPane)
     {
-        LogicalDateTime start = new LogicalDateTime("09/12/2016 10:34:47");
+        LogicalDateTime start = new LogicalDateTime("09/12/2016 20:58:47");
         LogicalDateTime end = new LogicalDateTime("11/12/2016 10:34:47");
         Aeroport aeroport = new Aeroport();
         aeroportGraphique = new AeroportGraphique(aeroport);
 
         canvasAeroport = new CanvasAeroport(aeroportGraphique);
         canvasAvion = new CanvasAvion();
+        canvasNuit = new CanvasNuit();
+
+        canvasNuit.resize(largeur, hauteur);
         canvasAeroport.resize(largeur, hauteur);
         canvasAvion.resize(largeur, hauteur);
 
         stackPane.getChildren().add(canvasAeroport);
         stackPane.getChildren().add(canvasAvion);
+        stackPane.getChildren().add(canvasNuit);
 
         eng = new SimuEngine(start, end);
         new Thread(aeroport.getTourDeControle()).start();
@@ -215,6 +227,7 @@ public class App extends Application {
                 else if (fini) {
                     //Thread t = new Thread(eng);
                     //t.start();
+                    canvasNuit.changement(eng.getCurrentDate());
                     labelHeure.setText(eng.getCurrentDate().toString());
                     labelEvenement.setText(eng.getCurrentEvent().toString());
                     eng.simulationStep(); //§!!!!!!!§§§§§TRES PROBLEMATIQUE
@@ -250,9 +263,6 @@ public class App extends Application {
             AvionGraphique avionGraphique = entree.getValue();
             Avion avion = entree.getKey();
             Point point = aeroportGraphique.obtenirPoint(avion.getEtat(),  avion.getConsigne());
-            if (point == null){
-                System.out.println(avion.getEtat());
-            }
             if (avionGraphique.avancerEtPeindreAvion(canvasAvion.getGraphicsContext2D(), point)) {
                 c++;
             }

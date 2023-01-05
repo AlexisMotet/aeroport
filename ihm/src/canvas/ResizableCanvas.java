@@ -2,7 +2,7 @@ package canvas;
 
 import javafx.scene.canvas.Canvas;
 
-public abstract class ResizableCanvas extends Canvas {
+public class ResizableCanvas extends Canvas {
 
     @Override
     public boolean isResizable() {
