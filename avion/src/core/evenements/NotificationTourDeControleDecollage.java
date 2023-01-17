@@ -5,6 +5,7 @@ import core.attente.Exponentielle;
 import core.attente.Loi;
 import core.attente.Uniforme;
 import core.protocole.Message;
+import core.protocole.MessageDecollage;
 import core.protocole.MessageDepart;
 import core.protocole.eMessage;
 import enstabretagne.base.time.LogicalDateTime;
@@ -33,6 +34,10 @@ public class NotificationTourDeControleDecollage extends EvenementAvion
         return attentes;
     }
 
+    public static String getNom(){
+        return "Notification Tour De Controle Decollage";
+    }
+
     @Override
     public String toString() {
         return "Notification Tour De Controle Decollage";
@@ -43,10 +48,11 @@ public class NotificationTourDeControleDecollage extends EvenementAvion
     {
         try
         {
-            Message message = avion.utiliserRadio(new MessageDepart(avion.getConsigne()));
+            Message message = avion.utiliserRadio(new MessageDecollage(avion.getConsigne()));
             eMessage msg = eMessage.valueOf(message.getClass().getSimpleName());
             if (msg == eMessage.MessageOk)
             {
+                avion.setEtat(Avion.eEtat.CIEL_DEPART);
                 LogicalDateTime date = getDateOccurence().add(
                         LogicalDuration.ofMinutes(attentes.get("Attente Notification Tour De Controle Arrivee").next()));
                 avion.getEngine().postEvent(new NotificationTourDeControleArrivee(getEntity(), date));

@@ -1,20 +1,17 @@
 package aeroport;
 
 import canvas.CanvasAvion;
-import com.sun.prism.shader.Solid_TextureYV12_AlphaTest_Loader;
-import core.*;
+import core.Avion;
+import core.protocole.Consigne;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class AvionGraphique {
 
@@ -48,27 +45,43 @@ public class AvionGraphique {
             "TBM3\\Type_3\\Animation\\"
     };
 
-    String type;
+    private final String type;
     static HashMap<String, Image> mapImages = new HashMap<>();
-    private int x = 0;
-    private int y = 0;
-
-    ArrayList<Image> images = new ArrayList<>();
-
+    public static ArrayList<Image> images = new ArrayList<>();
     private int r = 0;
+    private int rCiel;
 
-    public AvionGraphique() {
+    private int x;
+    private int y;
+
+    private Double m = null;
+    private Double b;
+
+    SnapshotParameters parametres;
+    private final ImageView imageView;
+    private Image image = null;
+
+    private double dernierR = -1;
+    private final Point pointDuCiel;
+
+    public AvionGraphique(Point pointDuCiel) {
         Random rand = new Random();
         int rnd = rand.nextInt(types.length);
         type = chemin + types[rnd];
-        ImageView imageView = new ImageView(mapImages.get(type + "1.png"));
-        SnapshotParameters parametres = new SnapshotParameters();
+        System.out.println(rnd);
+        imageView = new ImageView(mapImages.get(type + "1.png"));
+        parametres = new SnapshotParameters();
         parametres.setFill(Color.TRANSPARENT);
-        for (int i = 0; i < 4; i++)
-        {
-            images.add(imageView.snapshot(parametres, null));
-            imageView.setRotate(imageView.getRotate() + 90);
-        }
+        imageView.setRotate(90);
+        this.pointDuCiel = pointDuCiel;
+        x = pointDuCiel.getX();
+        y = pointDuCiel.getY();
+    }
+
+    private void setImage(int r)
+    {
+        imageView.setRotate(90 + r);
+        image = imageView.snapshot(parametres, null);
     }
 
     public static void chargerImages()
@@ -81,41 +94,100 @@ public class AvionGraphique {
         }
     }
 
-    public Boolean avancerEtPeindreAvion(GraphicsContext gc, Point point)
+    public Boolean avancerEtPeindreAvion(GraphicsContext gc, Point futurPoint, Avion.eEtat etat,
+                                         Consigne consigne)
     {
-        int vitesse = 1;
-        if (point == null) {
+        int vitesse = 10;
+        if (etat == Avion.eEtat.CIEL) return true;
+        if (etat == Avion.eEtat.CIEL_CONSIGNE_ARRIVEE || etat == Avion.eEtat.CIEL_DEPART) {
+            if (etat == Avion.eEtat.CIEL_DEPART) futurPoint = pointDuCiel;
+            if (m == null)
+            {
+                if (futurPoint.getX() - x == 0) return true;
+                m = (double) (futurPoint.getY() - y) / (futurPoint.getX() - x);
+                b = futurPoint.getY() - m * futurPoint.getX();
+                rCiel = angleDepuisPoints(new Point(x, y), futurPoint);
+            }
+            if (futurPoint.getX() - x > 0)
+            {
+                x += vitesse;
+                r = rCiel + 180;
+                while (r >= 360) r-= 360;
+            }
+            else if (futurPoint.getX() - x < 0)
+            {
+                x -= vitesse;
+                r = rCiel;
+            }
+            y = (int) (m * x + b);
+        }
+        else {
+            if (futurPoint.getX() - x > 0)
+            {
+                x += vitesse;
+                r = 0;
+            }
+            else if (y - futurPoint.getY() > 0)
+            {
+                y -= vitesse;
+                r = 270;
+            }
+            else if (x - futurPoint.getX() > 0)
+            {
+                x -= vitesse;
+                r = 180;
+            }
+            else if (futurPoint.getY() - y > 0)
+            {
+                y += vitesse;
+                r = 90;
+            }
+        }
+        if (Math.abs(x - futurPoint.getX()) <= vitesse) x = futurPoint.getX();
+        if (Math.abs(y - futurPoint.getY()) <= vitesse) y = futurPoint.getY();
+
+        if (dernierR == -1 || dernierR != r)
+        {
+            setImage(r);
+            dernierR = r;
+        }
+        if (etat == Avion.eEtat.CIEL_CONSIGNE_ARRIVEE || etat == Avion.eEtat.CIEL_DEPART){
+            gc.drawImage(image,
+                    x - CanvasAvion.largeurAvion,
+                    y - CanvasAvion.hauteurAvion,
+                    2 * CanvasAvion.largeurAvion,
+                    2 * CanvasAvion.hauteurAvion);
+        }
+        else{
+            gc.strokeText(Integer.toString(consigne.getNumero()), x + CanvasAvion.largeurAvion/2,
+                    y + CanvasAvion.hauteurAvion/2);
+
+            gc.drawImage(image,
+                    x - CanvasAvion.largeurAvion/2,
+                    y - CanvasAvion.hauteurAvion/2,
+                    CanvasAvion.largeurAvion,
+                    CanvasAvion.hauteurAvion);
+        }
+
+        if (x == futurPoint.getX() && y == futurPoint.getY())
+        {
+            if (etat == Avion.eEtat.CIEL_DEPART) m = null;
             return true;
         }
-        if (point.getX() - x > 0)
-        {
-            x += vitesse;
-            r = 1;
-        }
-        else if (y - point.getY() > 0)
-        {
-            y -= vitesse;
-            r = 0;
-        }
-        else if (x - point.getX() > 0)
-        {
-            x -= vitesse;
-            r = 3;
-        }
-        else if (point.getY() - y > 0)
-        {
-            y += vitesse;
-            r = 2;
-        }
-        gc.drawImage(images.get(r),  x, y,
-                CanvasAvion.largeurAvion, CanvasAvion.hauteurAvion);
-        return (x == point.getX() && y == point.getY());
+        return false;
     }
 
-    public static void main(String[] args)
+    private int angleDepuisPoints(Point ancienPoint, Point nouveauPoint)
     {
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
-
+        double vx = nouveauPoint.getX() - ancienPoint.getX();
+        double vy = nouveauPoint.getY() - ancienPoint.getY();
+        int theta = (int) Math.abs(Math.toDegrees(Math.atan(vy/vx)));
+        if (vx >= 0 && vy >= 0) return theta;
+        else if (vx < 0 && vy >= 0) return 180 - theta;
+        else if (vx < 0) return 180 + theta;
+        else {
+            if (theta == 0) return 0;
+            else return 360 - theta;
+        }
     }
-
 }

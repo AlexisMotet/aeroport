@@ -13,15 +13,14 @@ import javafx.scene.image.Image;
 import java.util.HashMap;
 
 public class PisteGraphique implements ElementGraphique{
-    static String chemin = "file:ihm\\ressources\\img\\piste.png";
-    static Image image;
-    Piste piste;
+    public static String chemin = "file:ihm\\ressources\\img\\piste.png";
+    private static Image image;
+    private final Piste piste;
     private final HashMap<Integer, TerminalGraphique> mapTerminaux = new HashMap<>();
-    HashMap<Avion.eEtat, Point> mapEtats;
+    private final HashMap<Avion.eEtat, Point> mapEtats = new HashMap<>();
 
     public PisteGraphique(Piste piste)
     {
-        mapEtats = new HashMap<>();
         this.piste = piste;
     }
     public static void chargerImage()
@@ -31,12 +30,11 @@ public class PisteGraphique implements ElementGraphique{
     @Override
     public void peindre(GraphicsContext gc, double x0, double y0, double w, double h)
     {
-        double hauteurPiste = h/3;
+        double hauteurPiste = h/6;
         gc.drawImage(image, x0, y0, w, hauteurPiste);
-        Point point = new Point(x0 + CanvasAvion.largeurAvion,
-                y0 + hauteurPiste/2 - CanvasAvion.hauteurAvion/2);
+        Point point = new Point(x0 + w/20,
+                y0 + hauteurPiste/2);
         mapEtats.put(Avion.eEtat.APPROCHE, point);
-        mapEtats.put(Avion.eEtat.DECOLLAGE, point);
         double hauteurTerminal = h - hauteurPiste;
         for (Terminal terminal : piste.getTerminaux())
         {
@@ -50,7 +48,7 @@ public class PisteGraphique implements ElementGraphique{
     public Point obtenirPoint(Avion.eEtat etat, Consigne consigne){
         if (mapEtats.containsKey(etat))
             return mapEtats.get(etat);
-        TerminalGraphique terminal = mapTerminaux.get(consigne.terminal);
+        TerminalGraphique terminal = mapTerminaux.get(consigne.getTerminal());
         return terminal.obtenirPoint(etat, consigne);
     }
 }

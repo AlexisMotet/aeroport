@@ -31,6 +31,10 @@ public class NotificationTourDeControleFinDeVol extends EvenementAvion
         return attentes;
     }
 
+    public static String getNom(){
+        return "Notification Tour De Controle Fin De Vol";
+    }
+
     @Override
     public String toString() {
         return "Notification Tour De Controle Fin De Vol";

@@ -32,6 +32,10 @@ public class NotificationTourDeControleArrivee extends EvenementAvion
         return attentes;
     }
 
+    public static String getNom(){
+        return "Notification Tour De Controle Arrivee";
+    }
+
     @Override
     public String toString() {
         return "Notification Tour De Controle Arrivee";
@@ -39,22 +43,33 @@ public class NotificationTourDeControleArrivee extends EvenementAvion
 
     @Override
     public void process() {
+        avion.setEtat(Avion.eEtat.CIEL);
+        avion.setConsigne(null);
         try
         {
+            LogicalDuration retard;
             Message message = avion.utiliserRadio(new MessageArrivee());
             eMessage msg = eMessage.valueOf(message.getClass().getSimpleName());
             if (msg == eMessage.MessageVoieArrivee)
             {
                 avion.setConsigne(((MessageVoieArrivee) message).getConsigne());
-                LogicalDateTime date = getDateOccurence().add(
-                        LogicalDuration.ofMinutes(attentes.get("Attente Approche").next()));
+                avion.setEtat(Avion.eEtat.CIEL_CONSIGNE_ARRIVEE);
+                retard = LogicalDuration.ofMinutes(attentes.get(
+                        "Attente Approche").next());
+                avion.ajouterRetardAtterissage(retard);
+                avion.setRetardAtterrissageFinal(avion.getRetardAtterrissage());
+                avion.setRetardAtterrissage(LogicalDuration.ZERO);
+                LogicalDateTime date = getDateOccurence().add(retard);
                 avion.getEngine().postEvent(new Approche(getEntity(), date));
             } else
             {
-                LogicalDateTime date = getDateOccurence().add(
-                        LogicalDuration.ofMinutes(attentes.get("Attente Notification Tour De Controle Arrivee").next()));
+                retard = LogicalDuration.ofMinutes(attentes.get(
+                                "Attente Notification Tour De Controle Arrivee").next());
+                avion.ajouterRetardAtterissage(retard);
+                LogicalDateTime date = getDateOccurence().add(retard);
                 avion.getEngine().postEvent(new NotificationTourDeControleArrivee(getEntity(), date));
             }
+
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

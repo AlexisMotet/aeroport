@@ -26,6 +26,10 @@ public class Decollage extends EvenementAvion {
         return attentes;
     }
 
+    public static String getNom() {
+        return "Decollage";
+    }
+
     @Override
     public String toString() {
         return "Decollage";
@@ -34,7 +38,7 @@ public class Decollage extends EvenementAvion {
     @Override
     public void process()
     {
-        avion.setEtat(Avion.eEtat.DECOLLAGE);
+        avion.setEtat(Avion.eEtat.PISTE_CONSIGNE);
         LogicalDateTime date = getDateOccurence().add(
                 LogicalDuration.ofMinutes(attentes.get("Attente Notification Tour De Controle Decollage").next()));
         avion.getEngine().postEvent(new NotificationTourDeControleDecollage(getEntity(), date));

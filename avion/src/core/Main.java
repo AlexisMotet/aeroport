@@ -1,9 +1,7 @@
 package core;
 
-import enstabretagne.base.logger.Logger;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.engine.SimuEngine;
-import enstabretagne.base.math.MoreRandom;
 
 public class Main {
     public static void main(String[] args)  //static method

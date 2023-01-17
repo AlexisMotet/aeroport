@@ -1,0 +1,10 @@
+//https://stackoverflow.com/questions/59546374/modify-javafx-accordion
+
+.accordion > .titled-pane > .title {
+    -fx-background-color: null;
+}
+
+.titled-pane > *.content {
+  -fx-background-color: null;
+  -fx-border-color: null;
+}

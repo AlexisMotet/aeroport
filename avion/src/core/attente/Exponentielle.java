@@ -25,7 +25,7 @@ public class Exponentielle extends Loi{
 
     @Override
     public eLoi getNom() {
-        return eLoi.EXPONENTIELLE;
+        return eLoi.LOI_EXPONENTIELLE;
     }
 
     @Override

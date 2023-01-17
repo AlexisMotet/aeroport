@@ -34,6 +34,10 @@ public class NotificationTourDeControleDepart extends EvenementAvion {
         return attentes;
     }
 
+    public static String getNom(){
+        return "Notification Tour De Controle Depart";
+    }
+
     @Override
     public String toString() {
         return "Notification Tour De Controle Depart";
@@ -43,19 +47,26 @@ public class NotificationTourDeControleDepart extends EvenementAvion {
     public void process() {
         try
         {
+            LogicalDuration retard;
             Message message = avion.utiliserRadio(new MessageDepart(avion.getConsigne()));
             eMessage msg = eMessage.valueOf(message.getClass().getSimpleName());
             if (msg == eMessage.MessageOk)
             {
-                LogicalDateTime date = getDateOccurence().add(
-                        LogicalDuration.ofMinutes(attentes.get("Attente Roulement Depart").next()));
+                retard = LogicalDuration.ofMinutes(attentes.get("Attente Roulement Depart").next());
+                avion.ajouterRetardDecollage(retard);
+                avion.setRetardDecollageFinal(avion.getRetardDecollage());
+                avion.setRetardDecollage(LogicalDuration.ZERO);
+                LogicalDateTime date = getDateOccurence().add(retard);
                 avion.getEngine().postEvent(new RoulementDepart(getEntity(), date));
             } else
             {
-                LogicalDateTime date = getDateOccurence().add(
-                        LogicalDuration.ofMinutes(attentes.get("Attente Notification Tour De Controle Depart").next()));
+                retard = LogicalDuration.ofMinutes(attentes.get(
+                        "Attente Notification Tour De Controle Depart").next());
+                avion.ajouterRetardDecollage(retard);
+                LogicalDateTime date = getDateOccurence().add(retard);
                 avion.getEngine().postEvent(new NotificationTourDeControleDepart(getEntity(), date));
             }
+
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

@@ -9,71 +9,77 @@ import canvas.CanvasAvion;
 import canvas.CanvasNuit;
 import canvas.ResizableCanvas;
 import core.Avion;
+import core.Engin;
 import core.attente.*;
 import core.elements.Aeroport;
-import core.elements.Piste;
 import enstabretagne.base.time.LogicalDateTime;
+import enstabretagne.base.time.LogicalDuration;
 import enstabretagne.engine.SimEntity;
-import enstabretagne.engine.SimuEngine;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.control.skin.SpinnerSkin;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.util.*;
 
 public class App extends Application {
-
-    SimuEngine eng;
+    Engin eng;
 
     CanvasNuit canvasNuit;
     CanvasAvion canvasAvion;
     CanvasAeroport canvasAeroport;
+    ResizableCanvas canvasAnimation;
     int hauteur = 600;
-    int largeur = 500;
+    int largeur = 1000;
 
     AeroportGraphique aeroportGraphique;
 
     HashMap<Avion, AvionGraphique> mapAvions = new HashMap<>();
-    VBox vBox;
 
-    HBox hBoxHeure;
     Label labelHeure;
-
-    HBox hBoxEvenement;
     Label labelEvenement;
+    Label labelRetardAtterrissage;
+    Label labelRetardDecollage;
 
     @Override
     public void start(Stage stage) {
         HBox hBox = new HBox();
 
-        vBox = new VBox();
+        HBox littleHBox = new HBox();
 
-        labelHeure = new Label();
-        labelHeure.setStyle("-fx-font-size : 24;");
-        hBoxHeure = new HBox();
-        hBoxHeure.getChildren().add(labelHeure);
+        VBox vBox = new VBox();
+
+        labelHeure = new Label(
+                (new LogicalDateTime("01/01/2000 00:00:00")).toString());
+        labelHeure.setStyle("-fx-font-size : 30;");
 
         labelEvenement = new Label();
-        labelEvenement.setStyle("-fx-font-size : 16;");
-        hBoxEvenement = new HBox();
-        hBoxEvenement.getChildren().add(labelEvenement);
+        labelEvenement.setStyle("-fx-font-size : 14;");
 
-        vBox.getChildren().add(hBoxHeure);
-        vBox.getChildren().add(hBoxEvenement);
+        labelRetardAtterrissage = new Label();
+        labelRetardAtterrissage.setStyle("-fx-font-size : 14;");
+
+        labelRetardDecollage = new Label();
+        labelRetardDecollage.setStyle("-fx-font-size : 14;");
+
+        vBox.getChildren().add(labelHeure);
+        vBox.getChildren().add(new Label("Evenement :"));
+        vBox.getChildren().add(labelEvenement);
+        vBox.getChildren().add(new Label("Retard moyen a l'atterrissage :"));
+        vBox.getChildren().add(labelRetardAtterrissage);
+        vBox.getChildren().add(new Label("Retard moyen au decollage :"));
+        vBox.getChildren().add(labelRetardDecollage);
+        vBox.setSpacing(10);
 
         Accordion accordion = new Accordion();
 
@@ -82,55 +88,80 @@ public class App extends Application {
             String nom = evenement.getKey();
             TitledPane titledPane = new TitledPane();
             titledPane.setText(nom);
-            VBox vBoxEvenement = new VBox();
+            Accordion littleAccordion = new Accordion();
+            littleAccordion.setPadding(new Insets(0, 0, 0, 10));
             HashMap<String, Loi> attentes = evenement.getValue();
             for (Map.Entry<String, Loi> attente : attentes.entrySet())
             {
                 String nomAttente = attente.getKey();
-                Label labelAttente = new Label(nomAttente);
-                vBoxEvenement.getChildren().add(labelAttente);
+                TitledPane littleTitledPane = new TitledPane();
+                littleTitledPane.setText(nomAttente);
                 Loi loi = attente.getValue();
                 ComboBox<eLoi> comboBox = new ComboBox<>();
                 comboBox.setItems(FXCollections.observableArrayList(eLoi.values()));
                 comboBox.setValue(loi.getNom());
-                vBoxEvenement.getChildren().add(comboBox);
+                VBox vBoxAttente = new VBox();
+                vBoxAttente.setSpacing(10);
+                vBoxAttente.getChildren().add(comboBox);
                 VBox vBoxParametre = new VBox();
                 Label labelEsperance = new Label();
                 EventHandler<ActionEvent> event = e -> {
                     vBoxParametre.getChildren().clear();
                     Loi nouvelleLoi = null;
                     switch (comboBox.getValue()){
-                        case TRIANGLE -> nouvelleLoi = new Triangle();
-                        case EXPONENTIELLE -> nouvelleLoi = new Exponentielle();
-                        case UNIFORME -> nouvelleLoi = new Uniforme();
+                        case LOI_TRIANGULAIRE -> nouvelleLoi = new Triangulaire();
+                        case LOI_EXPONENTIELLE -> nouvelleLoi = new Exponentielle();
+                        case LOI_UNIFORME -> nouvelleLoi = new Uniforme();
+                        case LOI_GAUSSIENNE -> nouvelleLoi = new Gaussienne();
                     }
                     for (Parametre parametre : nouvelleLoi.getParametres())
                     {
                         vBoxParametre.getChildren().add(creerParametre(parametre, nouvelleLoi, labelEsperance));
                     }
+                    attentes.replace(nomAttente, nouvelleLoi);
                 };
                 comboBox.setOnAction(event);
                 comboBox.fireEvent(new ActionEvent());
-                vBoxEvenement.getChildren().add(vBoxParametre);
-                vBoxEvenement.getChildren().add(labelEsperance);
+                vBoxAttente.getChildren().add(vBoxParametre);
+                vBoxAttente.getChildren().add(labelEsperance);
+                littleTitledPane.setContent(vBoxAttente);
+                littleTitledPane.setExpanded(true);
+                littleAccordion.getPanes().add(littleTitledPane);
             }
-            titledPane.setContent(vBoxEvenement);
+            titledPane.setContent(littleAccordion);
             titledPane.setExpanded(true);
             accordion.getPanes().add(titledPane);
         }
-        vBox.getChildren().add(accordion);
+        littleHBox.getChildren().add(vBox);
+        littleHBox.getChildren().add(accordion);
 
+        littleHBox.setPadding(new Insets(10, 10, 10, 10));
+        littleHBox.setSpacing(10);
+
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setContent(littleHBox);
+        scrollPane.setStyle("-fx-focus-color: transparent;" +
+                            "-fx-faint-focus-color: transparent;" +
+                            "-fx-border-color : grey;");
+
+        hBox.getChildren().add(scrollPane);
         StackPane stackPane = new StackPane();
 
-
-
-        hBox.getChildren().add(vBox);
         hBox.getChildren().add(stackPane);
 
+        hBox.setPadding(new Insets(10, 10, 10, 10));
+        hBox.setSpacing(10);
+
         Scene s = new Scene(hBox, largeur, hauteur);
+        s.getStylesheets().add("style.css");
         stage.setScene(s);
         stage.setTitle("Aeroport");
-        stage.show();
+
+        hBox.applyCss();
+        hBox.layout();
+        scrollPane.setMinWidth(scrollPane.getWidth());
 
         AeroportGraphique.chargerImage();
         PisteGraphique.chargerImage();
@@ -138,8 +169,8 @@ public class App extends Application {
         TerminalGraphique.chargerImage();
         TaxiwayGraphique.chargerImage();
 
-
         initialisation(stackPane);
+        stage.show();
     }
 
     private HBox creerParametre (Parametre parametre, Loi loi, Label labelEsperance)
@@ -169,30 +200,32 @@ public class App extends Application {
 
     private void initialisation(StackPane stackPane)
     {
-        LogicalDateTime start = new LogicalDateTime("09/12/2016 20:58:47");
+        LogicalDateTime start = new LogicalDateTime("09/12/2016 04:55:47");
         LogicalDateTime end = new LogicalDateTime("11/12/2016 10:34:47");
+
         Aeroport aeroport = new Aeroport();
         aeroportGraphique = new AeroportGraphique(aeroport);
 
         canvasAeroport = new CanvasAeroport(aeroportGraphique);
         canvasAvion = new CanvasAvion();
         canvasNuit = new CanvasNuit();
+        canvasAnimation = new ResizableCanvas();
 
-        canvasNuit.resize(largeur, hauteur);
-        canvasAeroport.resize(largeur, hauteur);
-        canvasAvion.resize(largeur, hauteur);
+        Rectangle2D rect = Screen.getPrimary().getBounds();
+
+        canvasAnimation.resize(rect.getWidth(), rect.getHeight());
+        canvasNuit.resize(rect.getWidth(), rect.getHeight());
+        canvasAeroport.resize(rect.getWidth(), rect.getHeight());
+        canvasAvion.resize(rect.getWidth(), rect.getHeight());
 
         stackPane.getChildren().add(canvasAeroport);
         stackPane.getChildren().add(canvasAvion);
+        stackPane.getChildren().add(canvasAnimation);
         stackPane.getChildren().add(canvasNuit);
 
-        eng = new SimuEngine(start, end);
+        eng = new Engin(start, end);
         new Thread(aeroport.getTourDeControle()).start();
 
-        eng.addEntity(new Avion(eng));
-        eng.addEntity(new Avion(eng));
-        eng.addEntity(new Avion(eng));
-        eng.addEntity(new Avion(eng));
         eng.addEntity(new Avion(eng));
         eng.addEntity(new Avion(eng));
         eng.addEntity(new Avion(eng));
@@ -217,6 +250,8 @@ public class App extends Application {
             int c = 0;
             @Override
             public void handle(long l) {
+                canvasAnimation.clear();
+                aeroportGraphique.animationTourDeControle(canvasAnimation.getGraphicsContext2D());
                 if (attente) {
                     c ++;
                     if (c >= 10) {
@@ -230,6 +265,15 @@ public class App extends Application {
                     canvasNuit.changement(eng.getCurrentDate());
                     labelHeure.setText(eng.getCurrentDate().toString());
                     labelEvenement.setText(eng.getCurrentEvent().toString());
+
+                    LogicalDuration retardMoyenAtterrissage = eng.getRetardMoyenAtterrissage();
+                    if (retardMoyenAtterrissage == null) labelRetardAtterrissage.setText("non defini");
+                    else labelRetardAtterrissage.setText(retardMoyenAtterrissage.toString());
+
+                    LogicalDuration retardMoyenDecollage = eng.getRetardMoyenDecollage();
+                    if (retardMoyenDecollage == null) labelRetardDecollage.setText("non defini");
+                    else labelRetardDecollage.setText(retardMoyenDecollage.toString());
+
                     eng.simulationStep(); //§!!!!!!!§§§§§TRES PROBLEMATIQUE
                     attente = true;
                     maj = true;
@@ -251,23 +295,25 @@ public class App extends Application {
                 if (simEntity instanceof Avion) {
                     Avion avion = (Avion) simEntity;
                     if (!mapAvions.containsKey(avion)) {
-                        AvionGraphique avionGraphique = new AvionGraphique();
+                        AvionGraphique avionGraphique = new AvionGraphique(
+                                aeroportGraphique.genererPointDuCiel());
                         mapAvions.put(avion, avionGraphique);
                     }
                 }
             }
         }
         int c = 0;
-        canvasAvion.effacer();
+        canvasAvion.clear();
         for (Map.Entry<Avion, AvionGraphique> entree : mapAvions.entrySet()) {
             AvionGraphique avionGraphique = entree.getValue();
             Avion avion = entree.getKey();
-            Point point = aeroportGraphique.obtenirPoint(avion.getEtat(),  avion.getConsigne());
-            if (avionGraphique.avancerEtPeindreAvion(canvasAvion.getGraphicsContext2D(), point)) {
+            Point point = aeroportGraphique.obtenirPoint(avion.getEtat(), avion.getConsigne());
+            if (avionGraphique.avancerEtPeindreAvion(canvasAvion.getGraphicsContext2D(),
+                    point, avion.getEtat(), avion.getConsigne())) {
                 c++;
             }
         }
-        return (c == mapAvions.size());
+        return c == mapAvions.size();
     }
 
     public static void main(String[] args)

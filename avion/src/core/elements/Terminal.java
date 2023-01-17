@@ -28,8 +28,11 @@ public class Terminal implements Serializable {
 
     private final HashMap<Integer, Emplacement> mapEmplacements = new HashMap<>();
 
-    public void ajouterEmplacement(){
-        assert emplacements.size() < 3;
+    public void ajouterEmplacement() throws Exception {
+        if (emplacements.size() > 9)
+        {
+            throw new Exception("Le nombre d'emplacements est limite a 9");
+        }
         Emplacement gate = new Emplacement(this);
         emplacements.add(gate);
         mapEmplacements.put(gate.hashCode(), gate);

@@ -18,6 +18,10 @@ public abstract class EvenementAvion extends SimEvent {
         throw new IllegalStateException("La methode getAttentes doit etre surchargee");
     }
 
-    @Override
+    public static String getNom()
+    {
+        throw new IllegalStateException("La methode getNom doit etre surchargee");
+    }
+
     public abstract String toString();
 }

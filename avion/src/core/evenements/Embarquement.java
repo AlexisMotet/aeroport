@@ -26,6 +26,10 @@ public class Embarquement extends EvenementAvion {
         return attentes;
     }
 
+    public static String getNom() {
+        return "Embarquement";
+    }
+
     @Override
     public String toString() {
         return "Embarquement";
@@ -33,7 +37,6 @@ public class Embarquement extends EvenementAvion {
 
     @Override
     public void process() {
-        avion.setEtat(Avion.eEtat.EMBARQUEMENT);
         LogicalDateTime date = getDateOccurence().add(
                 LogicalDuration.ofMinutes(attentes.get("Attente Notification Tour De Controle Depart").next()));
         avion.getEngine().postEvent(new NotificationTourDeControleDepart(getEntity(), date));

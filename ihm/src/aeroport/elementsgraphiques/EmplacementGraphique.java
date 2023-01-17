@@ -23,12 +23,8 @@ public class EmplacementGraphique implements ElementGraphique {
     {
         gc.setFill(Color.WHITE);
         gc.fillRect(x0, y0, w, h);
-        Point point = new Point(x0 + w/2 - CanvasAvion.largeurAvion/2,
-                y0 + h/2 - CanvasAvion.hauteurAvion/2);
-        mapEtats.put(Avion.eEtat.DECHARGEMENT_PASSAGERS, point);
+        Point point = new Point(x0 + w/2,y0 + h/2);
         mapEtats.put(Avion.eEtat.ATTERI, point);
-        mapEtats.put(Avion.eEtat.EMBARQUEMENT, point);
-
     }
 
     @Override

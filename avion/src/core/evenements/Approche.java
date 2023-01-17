@@ -27,15 +27,21 @@ public class Approche extends EvenementAvion
         return attentes;
     }
 
+    public static String getNom() {
+        return "Approche";
+    }
+
     @Override
     public String toString() {
         return "Approche";
     }
 
+
     @Override
     public void process()
     {
         avion.setEtat(Avion.eEtat.APPROCHE);
+        System.out.println(attentes.get("Attente Atterissage"));
         LogicalDateTime date = getDateOccurence().add(LogicalDuration.ofMinutes(
                 attentes.get("Attente Atterissage").next()));
         avion.getEngine().postEvent(new Atterissage(getEntity(), date));

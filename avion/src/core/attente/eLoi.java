@@ -1,7 +1,9 @@
 package core.attente;
 
 public enum eLoi {
-    EXPONENTIELLE,
-    TRIANGLE,
-    UNIFORME
+    LOI_EXPONENTIELLE,
+    LOI_TRIANGULAIRE,
+    LOI_UNIFORME,
+
+    LOI_GAUSSIENNE,
 }

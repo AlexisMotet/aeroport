@@ -21,6 +21,10 @@ public class RoulementDepart extends EvenementAvion {
         avion = (Avion) entite;
     }
 
+    public static String getNom(){
+        return "Roulement Depart";
+    }
+
     @Override
     public String toString() {
         return "Roulement Depart";

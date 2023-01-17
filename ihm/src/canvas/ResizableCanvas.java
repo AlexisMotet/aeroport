@@ -34,4 +34,8 @@ public class ResizableCanvas extends Canvas {
         setWidth(width);
         setHeight(height);
     }
+
+    public void clear(){
+        getGraphicsContext2D().clearRect(0, 0, getWidth(), getHeight());
+    }
 }

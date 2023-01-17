@@ -26,6 +26,10 @@ public class RoulementArrivee extends EvenementAvion
         return attentes;
     }
 
+    public static String getNom(){
+        return "Roulement Arrivee";
+    }
+
     @Override
     public String toString() {
         return "Roulement Arrivee";

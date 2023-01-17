@@ -33,7 +33,7 @@ public class Uniforme extends Loi {
 
     @Override
     public eLoi getNom() {
-        return eLoi.UNIFORME;
+        return eLoi.LOI_UNIFORME;
     }
 
     @Override

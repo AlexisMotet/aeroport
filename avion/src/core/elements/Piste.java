@@ -17,8 +17,11 @@ public class Piste implements Serializable {
         return mapTerminaux;
     }
 
-    public Terminal ajouterTerminal(){
-        assert terminaux.size() < 3;
+    public Terminal ajouterTerminal() throws Exception {
+        if (terminaux.size() > 3)
+        {
+            throw new Exception("Le nombre de terminaux est limite a 3");
+        }
         Terminal terminal = new Terminal(this);
         terminaux.add(terminal);
         mapTerminaux.put(terminal.hashCode(), terminal);

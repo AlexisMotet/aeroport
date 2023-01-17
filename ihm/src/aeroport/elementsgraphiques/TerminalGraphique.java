@@ -15,13 +15,13 @@ import java.util.HashMap;
 
 public class TerminalGraphique implements ElementGraphique {
 
-    static String chemin = "file:ihm\\ressources\\img\\terminal.png";
-    static Image image;
-    Terminal terminal;
-    HashMap<Avion.eEtat, Point> mapEtats = new HashMap<>();
-    HashMap<Integer, EmplacementGraphique> mapEmplacements = new HashMap<>();
-    TaxiwayGraphique TW1;
-    TaxiwayGraphique TW2;
+    public static String chemin = "file:ihm\\ressources\\img\\terminal.png";
+    private static Image image;
+    private final Terminal terminal;
+    private final HashMap<Avion.eEtat, Point> mapEtats = new HashMap<>();
+    private final HashMap<Integer, EmplacementGraphique> mapEmplacements = new HashMap<>();
+    private TaxiwayGraphique TW1;
+    private TaxiwayGraphique TW2;
 
     public TerminalGraphique(Terminal terminal) {
         this.terminal = terminal;
@@ -80,8 +80,8 @@ public class TerminalGraphique implements ElementGraphique {
         TW1.peindre(gc, x0 + espace + largeurTaxiway, y0, largeurTaxiway, hauteurTaxiway);
         TW2.peindre(gc, x0 + w - (espace + 2 * largeurTaxiway), y0, largeurTaxiway, hauteurTaxiway);
 
-        Point point = new Point(x0 + espace + largeurTaxiway + largeurTaxiway/2 - CanvasAvion.largeurAvion/2,
-                y0 - CanvasAvion.hauteurAvion/2);
+        Point point = new Point(x0 + espace + largeurTaxiway + largeurTaxiway/2,
+                y0);
 
         mapEtats.put(Avion.eEtat.ATTERISSAGE, point);
     }
@@ -89,9 +89,9 @@ public class TerminalGraphique implements ElementGraphique {
     public Point obtenirPoint(Avion.eEtat etat, Consigne consigne)
     {
         if (mapEtats.containsKey(etat)) return mapEtats.get(etat);
-        else if (TW1.mapEtats.containsKey(etat)) return TW1.obtenirPoint(etat, consigne);
-        else if (TW2.mapEtats.containsKey(etat)) return TW2.obtenirPoint(etat, consigne);
-        return mapEmplacements.get(consigne.emplacement).obtenirPoint(etat, consigne);
+        else if (TW1.getMapEtats().containsKey(etat)) return TW1.obtenirPoint(etat, consigne);
+        else if (TW2.getMapEtats().containsKey(etat)) return TW2.obtenirPoint(etat, consigne);
+        return mapEmplacements.get(consigne.getEmplacement()).obtenirPoint(etat, consigne);
     }
 
 

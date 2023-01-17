@@ -7,15 +7,15 @@ import javafx.scene.paint.Color;
 public class CanvasNuit extends ResizableCanvas {
     private double opacite = 0;
 
-    final private LogicalDuration nuitSoir = LogicalDuration.ofHours(21);
-    final private LogicalDuration nuitMatin = LogicalDuration.ofHours(5);
+    final private LogicalDuration limiteSoir = LogicalDuration.ofHours(21);
+    final private LogicalDuration limiteMatin = LogicalDuration.ofHours(5);
 
     public void changement(LogicalDateTime date)
     {
         LogicalDateTime dateCopie = date.getCopy();
         dateCopie = dateCopie.truncateToDays();
 
-        if (date.soustract(dateCopie).compareTo(nuitSoir) > 0 || date.soustract(dateCopie).compareTo(nuitMatin) < 0)
+        if (date.soustract(dateCopie).compareTo(limiteSoir) > 0 || date.soustract(dateCopie).compareTo(limiteMatin) < 0)
         {
             opacite = 0.6;
         }

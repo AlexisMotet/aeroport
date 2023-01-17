@@ -7,6 +7,7 @@ import core.elements.Terminal;
 import core.protocole.*;
 import core.radio.RadioClient;
 import core.radio.RadioServeur;
+import enstabretagne.base.math.MoreRandom;
 
 import java.io.*;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 
 public class TourDeControleParfaite implements Runnable {
+
     private final Aeroport aeroport;
     private final HashMap<Integer, Consigne> avionsConnus = new HashMap<>();
     public TourDeControleParfaite(Aeroport aeroport) {
@@ -34,9 +36,9 @@ public class TourDeControleParfaite implements Runnable {
                         if (messageVoieArrivee instanceof MessageVoieArrivee) {
                             MessageVoieArrivee msgVoieArrivee =
                                     (MessageVoieArrivee) messageVoieArrivee;
-                            Piste piste = aeroport.mapPistes.get(
+                            Piste piste = aeroport.getMapPistes().get(
                                     msgVoieArrivee.getConsigne().getPiste());
-                            piste.setOccupee(false);
+                            piste.setOccupee(true);
                             Terminal terminal = piste.getMapTerminaux().get(
                                     msgVoieArrivee.getConsigne().getTerminal());
                             terminal.getTW1().setOccupee(true);
@@ -48,7 +50,7 @@ public class TourDeControleParfaite implements Runnable {
                     case MessageFinDeVol -> {
                         MessageFinDeVol messageFinDeVol =
                                 (MessageFinDeVol) message;
-                        Piste piste = aeroport.mapPistes.get(
+                        Piste piste = aeroport.getMapPistes().get(
                                 messageFinDeVol.getConsigne().getPiste());
                         piste.setOccupee(false);
                         Terminal terminal = piste.getMapTerminaux().get(
@@ -59,7 +61,7 @@ public class TourDeControleParfaite implements Runnable {
                     case MessageDepart -> {
                         MessageDepart messageDepart =
                                 (MessageDepart) message;
-                        Piste piste = aeroport.mapPistes.get(
+                        Piste piste = aeroport.getMapPistes().get(
                                 messageDepart.getConsigne().getPiste());
                         Terminal terminal = piste.getMapTerminaux().get(
                                 messageDepart.getConsigne().getTerminal());
@@ -73,7 +75,7 @@ public class TourDeControleParfaite implements Runnable {
                     case MessageDecollage -> {
                         MessageDecollage messageDecollage =
                                 (MessageDecollage) message;
-                        Piste piste = aeroport.mapPistes.get(
+                        Piste piste = aeroport.getMapPistes().get(
                                 messageDecollage.getConsigne().getPiste());
                         piste.setOccupee(false);
                         Terminal terminal = piste.getMapTerminaux().get(
@@ -83,6 +85,7 @@ public class TourDeControleParfaite implements Runnable {
                                 messageDecollage.getConsigne().getEmplacement());
                         emplacement.setOccupe(false);
                         radio.envoyerMessage(new MessageOk());
+                        avionsConnus.remove(messageDecollage.getConsigne().getNumero());
                     }
                 }
             }
@@ -100,9 +103,14 @@ public class TourDeControleParfaite implements Runnable {
                 for (Emplacement emplacement : terminal.getEmplacements())
                 {
                     if (emplacement.getOccupe()) continue;
+                    int n = 0;
+                    for (int numero : avionsConnus.keySet()){
+                        if (n < numero) break;
+                        n++;
+                    }
                     Consigne consigne = new Consigne(piste.hashCode(),
-                            terminal.hashCode(), emplacement.hashCode());
-                    avionsConnus.put(avionsConnus.size(), consigne);
+                            terminal.hashCode(), emplacement.hashCode(),n);
+                    avionsConnus.put(n, consigne);
                     return new MessageVoieArrivee(consigne);
                 }
             }

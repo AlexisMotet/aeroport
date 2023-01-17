@@ -26,6 +26,10 @@ public class DechargementPassagers extends EvenementAvion {
         return attentes;
     }
 
+    public static String getNom() {
+        return "Dechargement Passagers";
+    }
+
     @Override
     public String toString() {
         return "Dechargement Passagers";
@@ -33,9 +37,10 @@ public class DechargementPassagers extends EvenementAvion {
 
     @Override
     public void process() {
-        avion.setEtat(Avion.eEtat.DECHARGEMENT_PASSAGERS);
-        LogicalDateTime date = getDateOccurence().add(
-                LogicalDuration.ofMinutes(attentes.get("Attente Atteri").next()));
-        avion.getEngine().postEvent(new Atteri(getEntity(), date));
+        avion.setEtat(Avion.eEtat.ATTERI);
+        LogicalDuration dureeAttente = LogicalDuration.ofMinutes(
+                attentes.get("Attente Atteri").next());
+        LogicalDateTime date = getDateOccurence().add(dureeAttente);
+        avion.getEngine().postEvent(new Embarquement(getEntity(), date));
     }
 }
