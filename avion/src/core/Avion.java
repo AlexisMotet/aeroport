@@ -5,9 +5,7 @@ import core.evenements.*;
 import core.protocole.Consigne;
 import core.protocole.Message;
 import core.radio.RadioClient;
-import enstabretagne.base.time.LogicalDateTime;
-import enstabretagne.base.time.LogicalDuration;
-import enstabretagne.engine.SimEntity;
+ import enstabretagne.engine.SimEntity;
 import enstabretagne.engine.SimuEngine;
 
 import java.io.IOException;
@@ -19,17 +17,24 @@ public class Avion extends SimEntity {
     public static final LinkedHashMap<String, HashMap<String, Loi>> attentesEvenements = new LinkedHashMap<>() {{
         put(NotificationTourDeControleArrivee.getNom(),
                 NotificationTourDeControleArrivee.getAttentes());
-        put(Approche.getNom(), Approche.getAttentes());
-        put(Atterissage.getNom(), Atterissage.getAttentes());
-        put(RoulementArrivee.getNom(), RoulementArrivee.getAttentes());
+        put(Approche.getNom(),
+                Approche.getAttentes());
+        put(Atterissage.getNom(),
+                Atterissage.getAttentes());
+        put(RoulementArrivee.getNom(),
+                RoulementArrivee.getAttentes());
         put(NotificationTourDeControleFinDeVol.getNom(),
                 NotificationTourDeControleFinDeVol.getAttentes());
-        put(DechargementPassagers.getNom(), DechargementPassagers.getAttentes());
-        put(Embarquement.getNom(), Embarquement.getAttentes());
+        put(DechargementPassagers.getNom(),
+                DechargementPassagers.getAttentes());
+        put(Embarquement.getNom(),
+                Embarquement.getAttentes());
         put(NotificationTourDeControleDepart.getNom(),
                 NotificationTourDeControleDepart.getAttentes());
-        put(RoulementDepart.getNom(), RoulementDepart.getAttentes());
-        put(Decollage.getNom(), Decollage.getAttentes());
+        put(RoulementDepart.getNom(),
+                RoulementDepart.getAttentes());
+        put(Decollage.getNom(),
+                Decollage.getAttentes());
         put(NotificationTourDeControleDecollage.getNom(),
                 NotificationTourDeControleDecollage.getAttentes());
     }};
@@ -49,13 +54,8 @@ public class Avion extends SimEntity {
     private eEtat etat;
     private RadioClient radio;
     private Consigne consigne;
-
-    private LogicalDuration retardAtterrissage = null;
-    private LogicalDuration retardDecollage = null;
-
-    private LogicalDuration retardAtterrissageFinal = null;
-
-    private LogicalDuration retardDecollageFinal = null;
+    private long retardAtterrissage = -1;
+    private long retardDecollage = -1;
 
     public Avion(SimuEngine eng) {
         super(eng);
@@ -70,6 +70,7 @@ public class Avion extends SimEntity {
             throw new RuntimeException(e);
         }
         setEtat(Avion.eEtat.CIEL);
+        setConsigne(null);
         getEngine().postEvent(new NotificationTourDeControleArrivee(this,
                 getEngine().getCurrentDate()));
     }
@@ -96,50 +97,32 @@ public class Avion extends SimEntity {
         this.etat = etat;
     }
 
-    public void ajouterRetardAtterissage(LogicalDuration duree) {
-        if (retardAtterrissage == null) retardAtterrissage = LogicalDuration.ZERO;
-        retardAtterrissage = retardAtterrissage.add(duree);
+    public void ajouterRetardAtterissage(long duree) {
+        if (retardAtterrissage == -1) retardAtterrissage = 0;
+        retardAtterrissage += duree;
     }
 
-    public void ajouterRetardDecollage(LogicalDuration duree) {
-        if (retardDecollage == null) retardDecollage = LogicalDuration.ZERO;
-        retardDecollage = retardDecollage.add(duree);
+    public void ajouterRetardDecollage(long duree) {
+        if (retardDecollage == -1) retardDecollage = 0;
+        retardDecollage += duree;
     }
-
-    public void setRetardAtterrissage(LogicalDuration retardAtterrissage) {
-        this.retardAtterrissage = retardAtterrissage;
+    public long getRetardAtterrissage() {
+        if (retardAtterrissage!= -1 && etat == eEtat.CIEL_CONSIGNE_ARRIVEE)
+        {
+            long sauv = retardAtterrissage;
+            retardAtterrissage = -1;
+            return sauv;
+        }
+        return -1;
     }
-
-    public void setRetardDecollage(LogicalDuration retardDecollage) {
-        this.retardDecollage = retardDecollage;
+    public long getRetardDecollage() {
+        if (retardDecollage!= -1 && etat == eEtat.CIEL_DEPART)
+        {
+            long sauv = retardDecollage;
+            retardDecollage = -1;
+            return sauv;
+        }
+        return -1;
     }
-
-    public LogicalDuration getRetardAtterrissage() {
-        return retardAtterrissage;
-    }
-
-    public LogicalDuration getRetardDecollage() {
-        return retardDecollage;
-    }
-    public LogicalDuration getRetardAtterrissageFinal() {
-        LogicalDuration sauvegarde = retardAtterrissageFinal;
-        retardAtterrissageFinal = null;
-        return sauvegarde;
-    }
-
-    public void setRetardAtterrissageFinal(LogicalDuration retardAtterrissageFinal) {
-        this.retardAtterrissageFinal = retardAtterrissageFinal;
-    }
-
-    public LogicalDuration getRetardDecollageFinal() {
-        LogicalDuration sauvegarde = retardDecollageFinal;
-        retardDecollageFinal = null;
-        return sauvegarde;
-    }
-
-    public void setRetardDecollageFinal(LogicalDuration retardDecollageFinal) {
-        this.retardDecollageFinal = retardDecollageFinal;
-    }
-
 }
 

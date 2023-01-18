@@ -50,12 +50,14 @@ public class NotificationTourDeControleFinDeVol extends EvenementAvion
             if (msg == eMessage.MessageOk)
             {
                 LogicalDateTime date = getDateOccurence().add(
-                        LogicalDuration.ofMinutes(attentes.get("Attente Dechargement Passagers").next()));
+                        LogicalDuration.ofMinutes(attentes.get(
+                                "Attente Dechargement Passagers").next()));
                 avion.getEngine().postEvent(new DechargementPassagers(getEntity(), date));
             } else
             {
                 LogicalDateTime date = getDateOccurence().add(
-                        LogicalDuration.ofMinutes(attentes.get("Attente Notification Tour De Controle Fin De Vol").next()));
+                        LogicalDuration.ofMinutes(attentes.get(
+                                "Attente Notification Tour De Controle Fin De Vol").next()));
                 avion.getEngine().postEvent(new NotificationTourDeControleFinDeVol(getEntity(), date));
             }
         } catch (IOException | ClassNotFoundException e) {

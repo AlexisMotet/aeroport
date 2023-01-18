@@ -1,5 +1,6 @@
 package core;
 
+import core.outils.OutilDate;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 import enstabretagne.engine.SimEvent;
@@ -10,11 +11,11 @@ import java.time.Duration;
 public class Engin extends SimuEngine {
     // :)
     // https://stackoverflow.com/questions/15505515/java-long-primitive-type-maximum-limit
-    private long minutesRetardAtterrissageCumule = 0;
-    private long minutesRetardDecollageCumule = 0;
 
-    private LogicalDuration retardMoyenAtterrissage = null;
-    private LogicalDuration retardMoyenDecollage = null;
+    private long retardAtterrissageCumule = 0;
+    private long retardDecollageCumule = 0;
+    private long retardMoyenAtterrissage = 0;
+    private long retardMoyenDecollage = 0;
     private int cAtterrissage = 0;
     private int cDecollage = 0;
 
@@ -27,23 +28,17 @@ public class Engin extends SimuEngine {
         if (currentEvent.getEntity() instanceof Avion)
         {
             Avion avion = (Avion) currentEvent.getEntity();
-            LogicalDuration retardAtterrissage = avion.getRetardAtterrissageFinal();
-            if (retardAtterrissage != null)
-            {
-                minutesRetardAtterrissageCumule += retardAtterrissage.getTotalOfMinutes();
+            long retardAtterrissage = avion.getRetardAtterrissage();
+            if (retardAtterrissage != -1){
+                retardAtterrissageCumule += retardAtterrissage;
                 cAtterrissage ++;
-                Duration duration = Duration.ofMinutes(minutesRetardAtterrissageCumule);
-                long minutes = duration.dividedBy(cAtterrissage).toMinutes();
-                retardMoyenAtterrissage = LogicalDuration.ofMinutes(minutes);
+                retardMoyenAtterrissage = retardAtterrissageCumule/cAtterrissage;
             }
-            LogicalDuration retardDecollage = avion.getRetardDecollageFinal();
-            if (retardDecollage != null)
-            {
-                minutesRetardDecollageCumule += retardDecollage.getTotalOfMinutes();
+            long retardDecollage = avion.getRetardDecollage();
+            if (retardDecollage != -1){
+                retardDecollageCumule += retardDecollage;
                 cDecollage ++;
-                Duration duration = Duration.ofMinutes(minutesRetardDecollageCumule);
-                long minutes = duration.dividedBy(cDecollage).toMinutes();
-                retardMoyenDecollage = LogicalDuration.ofMinutes(minutes);
+                retardMoyenDecollage = retardDecollageCumule/cDecollage;
             }
         }
         currentDate = currentEvent.getDateOccurence();
@@ -54,11 +49,11 @@ public class Engin extends SimuEngine {
         return true;
     }
 
-    public LogicalDuration getRetardMoyenAtterrissage() {
+    public long getRetardMoyenAtterrissage() {
         return retardMoyenAtterrissage;
     }
 
-    public LogicalDuration getRetardMoyenDecollage() {
+    public long getRetardMoyenDecollage() {
         return retardMoyenDecollage;
     }
 }

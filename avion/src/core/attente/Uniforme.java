@@ -32,23 +32,36 @@ public class Uniforme extends Loi {
     }
 
     @Override
-    public eLoi getNom() {
-        return eLoi.LOI_UNIFORME;
+    public String getNom() {
+        return "Uniforme";
     }
 
     @Override
     public ArrayList<Parametre> getParametres() {
         return parametres;
     }
+    @Override
     public Double getEsperance()
     {
-        if (a.getVal() < b.getVal())
+        if (a.getVal() <= b.getVal())
         {
             return (a.getVal() + b.getVal())/2;
         }
         else
         {
             return (double) 99;
+        }
+    }
+    @Override
+    public Double getEcartType()
+    {
+        if (a.getVal() <= b.getVal())
+        {
+            return (b.getVal() - a.getVal())/Math.sqrt(12);
+        }
+        else
+        {
+            return (double) 0;
         }
     }
 

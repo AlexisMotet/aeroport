@@ -1,11 +1,15 @@
 package core.elements;
 
 import core.TourDeControleParfaite;
+import enstabretagne.base.time.LogicalDuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Aeroport {
+
+    public static LogicalDuration limiteSoir = LogicalDuration.ofHours(21);
+    public static LogicalDuration limiteMatin = LogicalDuration.ofHours(5);
     private final ArrayList<Piste> pistes = new ArrayList<>();
 
     public HashMap<Integer, Piste> getMapPistes() {

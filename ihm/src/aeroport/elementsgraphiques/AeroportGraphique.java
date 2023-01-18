@@ -28,9 +28,13 @@ public class AeroportGraphique implements ElementGraphique {
     private double r = 0;
     private double xTourDeControle;
     private double yTourDeControle;
-
     private double xCiel;
     private double y0Ciel;
+    private final HashMap<Integer, Point> mapPointsDuCiel = new HashMap<>();
+
+    public HashMap<Integer, Point> getMapPointsDuCiel() {
+        return mapPointsDuCiel;
+    }
     private double hauteurCiel;
 
     private static final MoreRandom random = new MoreRandom();
@@ -75,8 +79,9 @@ public class AeroportGraphique implements ElementGraphique {
         double hauteurBandeHerbe = h/4;
         gc.drawImage(image, x0, y0, w, h);
         dessinerTourDeControle(gc, y0, w, hauteurBandeHerbe);
-        xCiel = w + w/20;
+        xCiel = w + 3 * CanvasAvion.largeurAvion;
         y0Ciel = y0;
+        genererMapDePointsDuCiel();
         hauteurCiel = h;
         y0 += hauteurBandeHerbe;
         double hauteurAeroport = h - hauteurBandeHerbe;
@@ -86,7 +91,7 @@ public class AeroportGraphique implements ElementGraphique {
             PisteGraphique pisteGraphique = new PisteGraphique(piste);
             mapPistes.put(piste.hashCode(), pisteGraphique);
             pisteGraphique.peindre(gc, x0, y0, w, hauteurPisteEtTerminaux);
-            mapConsignePistes.put(pisteGraphique, new Point(x0 - w/5,
+            mapConsignePistes.put(pisteGraphique, new Point(x0 - 3 * CanvasAvion.largeurAvion,
                     y0 + hauteurPisteEtTerminaux/12));
             y0 += hauteurPisteEtTerminaux;
         }
@@ -99,6 +104,16 @@ public class AeroportGraphique implements ElementGraphique {
         }
         PisteGraphique piste = mapPistes.get(consigne.getPiste());
         return piste.obtenirPoint(etat, consigne);
+    }
+
+    public int genererIdPointDuCiel()
+    {
+        return (int) random.nextUniform(0, 40);
+    }
+
+    public void genererMapDePointsDuCiel()
+    {
+        for (int i = 0; i < 40; i++) mapPointsDuCiel.put(i, genererPointDuCiel());
     }
 
     public Point genererPointDuCiel()

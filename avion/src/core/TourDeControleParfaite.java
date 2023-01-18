@@ -7,7 +7,6 @@ import core.elements.Terminal;
 import core.protocole.*;
 import core.radio.RadioClient;
 import core.radio.RadioServeur;
-import enstabretagne.base.math.MoreRandom;
 
 import java.io.*;
 import java.util.HashMap;

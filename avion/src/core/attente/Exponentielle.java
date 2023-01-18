@@ -24,16 +24,21 @@ public class Exponentielle extends Loi{
     }
 
     @Override
-    public eLoi getNom() {
-        return eLoi.LOI_EXPONENTIELLE;
+    public String getNom() {
+        return "Exponentielle";
     }
 
     @Override
     public ArrayList<Parametre> getParametres() {
         return parametres;
     }
-
+    @Override
     public Double getEsperance()
+    {
+        return 1/lambda.getVal();
+    }
+    @Override
+    public Double getEcartType()
     {
         return 1/lambda.getVal();
     }

@@ -1,13 +1,11 @@
 package core.evenements;
 
 import core.Avion;
-import core.attente.Exponentielle;
 import core.attente.Loi;
 import core.attente.Uniforme;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 import enstabretagne.engine.SimEntity;
-import enstabretagne.engine.SimEvent;
 
 import java.util.HashMap;
 

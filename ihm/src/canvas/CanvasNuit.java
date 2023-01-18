@@ -1,5 +1,6 @@
 package canvas;
 
+import core.outils.OutilDate;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 import javafx.scene.paint.Color;
@@ -7,22 +8,10 @@ import javafx.scene.paint.Color;
 public class CanvasNuit extends ResizableCanvas {
     private double opacite = 0;
 
-    final private LogicalDuration limiteSoir = LogicalDuration.ofHours(21);
-    final private LogicalDuration limiteMatin = LogicalDuration.ofHours(5);
-
     public void changement(LogicalDateTime date)
     {
-        LogicalDateTime dateCopie = date.getCopy();
-        dateCopie = dateCopie.truncateToDays();
-
-        if (date.soustract(dateCopie).compareTo(limiteSoir) > 0 || date.soustract(dateCopie).compareTo(limiteMatin) < 0)
-        {
-            opacite = 0.6;
-        }
-        else
-        {
-            opacite = 0;
-        }
+        if (!OutilDate.checkSiJour(date)) opacite = 0.3;
+        else opacite = 0;
         peindre();
     }
 

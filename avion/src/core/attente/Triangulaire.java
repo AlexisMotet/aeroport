@@ -34,15 +34,14 @@ public class Triangulaire extends Loi {
     }
 
     @Override
-    public eLoi getNom() {
-        return eLoi.LOI_TRIANGULAIRE;
+    public String getNom() {
+        return "Triangulaire";
     }
-
     @Override
     public ArrayList<Parametre> getParametres() {
         return parametres;
     }
-
+    @Override
     public Double getEsperance()
     {
         if (a.getVal() < b.getVal() && a.getVal() <= c.getVal() && c.getVal() <= b.getVal())
@@ -52,6 +51,19 @@ public class Triangulaire extends Loi {
         else
         {
             return (double) 99;
+        }
+    }
+    @Override
+    public Double getEcartType()
+    {
+        if (a.getVal() < b.getVal() && a.getVal() <= c.getVal() && c.getVal() <= b.getVal())
+        {
+            return Math.sqrt((Math.pow(a.getVal(),2) + Math.pow(b.getVal(), 2) + Math.pow(c.getVal(), 2) -
+                    a.getVal()*b.getVal() -a.getVal()*c.getVal() - b.getVal() * c.getVal())/18);
+        }
+        else
+        {
+            return (double) 0;
         }
     }
 }

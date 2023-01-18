@@ -12,11 +12,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class SimuEngine implements Runnable {
-    final private SortedList<SimEvent> sortedEventList;
+    protected final SortedList<SimEvent> sortedEventList;
     final private List<SimEntity> entityList;
-    private LogicalDateTime currentDate;
-    final private LogicalDateTime endDate;
+    protected LogicalDateTime currentDate;
+    protected final LogicalDateTime endDate;
 
+    public SortedList<SimEvent> getSortedEventList() {
+        return sortedEventList;
+    }
 
     public SimuEngine(LogicalDateTime currentDate, LogicalDateTime endDate) {
         sortedEventList = new SortedList<>();

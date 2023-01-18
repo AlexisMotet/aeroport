@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public abstract class Loi {
 
-    public abstract eLoi getNom();
+    public abstract String getNom();
     private final MoreRandom random = new MoreRandom();
     public MoreRandom getRandom() {
         return random;
@@ -18,4 +18,12 @@ public abstract class Loi {
 
     public abstract Double getEsperance();
 
+    public abstract Double getEcartType();
+
+    public static String[] nomsLois = {
+            "Uniforme",
+            "Triangulaire",
+            "Exponentielle",
+            "Gaussienne"
+    };
 }

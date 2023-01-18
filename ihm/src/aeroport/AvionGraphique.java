@@ -8,8 +8,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -45,37 +43,32 @@ public class AvionGraphique {
             "TBM3\\Type_3\\Animation\\"
     };
 
-    private final String type;
     static HashMap<String, Image> mapImages = new HashMap<>();
-    public static ArrayList<Image> images = new ArrayList<>();
+
+    static int vitesse = 10;
     private int r = 0;
     private int rCiel;
-
     private int x;
     private int y;
-
-    private Double m = null;
+    int idPointDuCiel;
+    private Double m;
     private Double b;
-
     SnapshotParameters parametres;
     private final ImageView imageView;
     private Image image = null;
-
     private double dernierR = -1;
-    private final Point pointDuCiel;
 
-    public AvionGraphique(Point pointDuCiel) {
+    public AvionGraphique(Point pointDuCiel, int idPointDuCiel) {
         Random rand = new Random();
         int rnd = rand.nextInt(types.length);
-        type = chemin + types[rnd];
-        System.out.println(rnd);
+        String type = chemin + types[rnd];
         imageView = new ImageView(mapImages.get(type + "1.png"));
         parametres = new SnapshotParameters();
         parametres.setFill(Color.TRANSPARENT);
         imageView.setRotate(90);
-        this.pointDuCiel = pointDuCiel;
         x = pointDuCiel.getX();
         y = pointDuCiel.getY();
+        this.idPointDuCiel = idPointDuCiel;
     }
 
     private void setImage(int r)
@@ -94,16 +87,17 @@ public class AvionGraphique {
         }
     }
 
-    public Boolean avancerEtPeindreAvion(GraphicsContext gc, Point futurPoint, Avion.eEtat etat,
+    public Boolean avancerEtPeindreAvion(GraphicsContext gc, HashMap<Integer, Point> mapPointsDuCiel,
+                                         Point futurPoint, Avion.eEtat etat,
                                          Consigne consigne)
     {
-        int vitesse = 10;
         if (etat == Avion.eEtat.CIEL) return true;
-        if (etat == Avion.eEtat.CIEL_CONSIGNE_ARRIVEE || etat == Avion.eEtat.CIEL_DEPART) {
-            if (etat == Avion.eEtat.CIEL_DEPART) futurPoint = pointDuCiel;
+        else if (etat == Avion.eEtat.CIEL_CONSIGNE_ARRIVEE || etat == Avion.eEtat.CIEL_DEPART) {
+            if (etat == Avion.eEtat.CIEL_DEPART){
+                futurPoint = mapPointsDuCiel.get(idPointDuCiel);
+            }
             if (m == null)
             {
-                if (futurPoint.getX() - x == 0) return true;
                 m = (double) (futurPoint.getY() - y) / (futurPoint.getX() - x);
                 b = futurPoint.getY() - m * futurPoint.getX();
                 rCiel = angleDepuisPoints(new Point(x, y), futurPoint);
@@ -113,13 +107,24 @@ public class AvionGraphique {
                 x += vitesse;
                 r = rCiel + 180;
                 while (r >= 360) r-= 360;
+                y = (int) (m * x + b);
             }
             else if (futurPoint.getX() - x < 0)
             {
                 x -= vitesse;
                 r = rCiel;
+                y = (int) (m * x + b);
             }
-            y = (int) (m * x + b);
+            else if (y - futurPoint.getY() > 0)
+            {
+                y -= vitesse;
+                r = 270;
+            }
+            else if (futurPoint.getY() - y > 0)
+            {
+                y += vitesse;
+                r = 90;
+            }
         }
         else {
             if (futurPoint.getX() - x > 0)
@@ -153,10 +158,10 @@ public class AvionGraphique {
         }
         if (etat == Avion.eEtat.CIEL_CONSIGNE_ARRIVEE || etat == Avion.eEtat.CIEL_DEPART){
             gc.drawImage(image,
-                    x - CanvasAvion.largeurAvion,
-                    y - CanvasAvion.hauteurAvion,
-                    2 * CanvasAvion.largeurAvion,
-                    2 * CanvasAvion.hauteurAvion);
+                    x - ((double)3/2) * CanvasAvion.largeurAvion,
+                    y - ((double)3/2) * CanvasAvion.hauteurAvion,
+                    3 * CanvasAvion.largeurAvion,
+                     3 * CanvasAvion.hauteurAvion);
         }
         else{
             gc.strokeText(Integer.toString(consigne.getNumero()), x + CanvasAvion.largeurAvion/2,
@@ -171,7 +176,8 @@ public class AvionGraphique {
 
         if (x == futurPoint.getX() && y == futurPoint.getY())
         {
-            if (etat == Avion.eEtat.CIEL_DEPART) m = null;
+            if (etat == Avion.eEtat.CIEL_DEPART)
+                m = null;
             return true;
         }
         return false;

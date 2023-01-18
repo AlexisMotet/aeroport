@@ -13,8 +13,8 @@ public class Gaussienne extends Loi {
         add(sigma);
     }};
     @Override
-    public eLoi getNom() {
-        return eLoi.LOI_GAUSSIENNE;
+    public String getNom() {
+        return "Gaussienne";
     }
 
     public Gaussienne() {
@@ -35,5 +35,10 @@ public class Gaussienne extends Loi {
     @Override
     public Double getEsperance() {
         return mu.getVal();
+    }
+
+    @Override
+    public Double getEcartType() {
+        return sigma.getVal();
     }
 }
