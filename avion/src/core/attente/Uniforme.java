@@ -4,15 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Uniforme extends Loi {
-    private final Parametre a = new Parametre("a", 0, 10);
-    private final Parametre b = new Parametre("b", 0, 10);
+    private final Parametre a = new Parametre("a", 0, 60);
+    private final Parametre b = new Parametre("b", 0, 60);
 
     public static double A = 2;
     public static double B = 5;
 
     public Uniforme() {
-        this.a.setVal(A);
-        this.b.setVal(B);
+        a.setVal(A);
+        b.setVal(B);
+    }
+
+    public Uniforme(double a, double b) {
+        this.a.setVal(a);
+        this.b.setVal(b);
     }
     private final ArrayList<Parametre> parametres = new ArrayList<>(){{
         add(a);
@@ -27,13 +32,13 @@ public class Uniforme extends Loi {
         }
         else
         {
-            return 99;
+            return 60;
         }
     }
 
     @Override
     public String getNom() {
-        return "Uniforme";
+        return "Loi uniforme";
     }
 
     @Override
@@ -49,7 +54,7 @@ public class Uniforme extends Loi {
         }
         else
         {
-            return (double) 99;
+            return (double) 60;
         }
     }
     @Override

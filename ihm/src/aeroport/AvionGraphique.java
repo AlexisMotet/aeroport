@@ -91,6 +91,7 @@ public class AvionGraphique {
                                          Point futurPoint, Avion.eEtat etat,
                                          Consigne consigne)
     {
+        boolean peindre = true;
         if (etat == Avion.eEtat.CIEL) return true;
         else if (etat == Avion.eEtat.CIEL_CONSIGNE_ARRIVEE || etat == Avion.eEtat.CIEL_DEPART) {
             if (etat == Avion.eEtat.CIEL_DEPART){
@@ -119,11 +120,13 @@ public class AvionGraphique {
             {
                 y -= vitesse;
                 r = 270;
+                peindre = false;
             }
             else if (futurPoint.getY() - y > 0)
             {
                 y += vitesse;
                 r = 90;
+                peindre = false;
             }
         }
         else {
@@ -148,6 +151,7 @@ public class AvionGraphique {
                 r = 90;
             }
         }
+
         if (Math.abs(x - futurPoint.getX()) <= vitesse) x = futurPoint.getX();
         if (Math.abs(y - futurPoint.getY()) <= vitesse) y = futurPoint.getY();
 
@@ -156,23 +160,26 @@ public class AvionGraphique {
             setImage(r);
             dernierR = r;
         }
-        if (etat == Avion.eEtat.CIEL_CONSIGNE_ARRIVEE || etat == Avion.eEtat.CIEL_DEPART){
-            gc.drawImage(image,
-                    x - ((double)3/2) * CanvasAvion.largeurAvion,
-                    y - ((double)3/2) * CanvasAvion.hauteurAvion,
-                    3 * CanvasAvion.largeurAvion,
-                     3 * CanvasAvion.hauteurAvion);
-        }
-        else{
-            gc.strokeText(Integer.toString(consigne.getNumero()), x + CanvasAvion.largeurAvion/2,
-                    y + CanvasAvion.hauteurAvion/2);
+        if (peindre){
+            if (etat == Avion.eEtat.CIEL_CONSIGNE_ARRIVEE || etat == Avion.eEtat.CIEL_DEPART){
+                gc.drawImage(image,
+                        x - ((double)3/2) * CanvasAvion.largeurAvion,
+                        y - ((double)3/2) * CanvasAvion.hauteurAvion,
+                        3 * CanvasAvion.largeurAvion,
+                        3 * CanvasAvion.hauteurAvion);
+            }
+            else{
+                gc.strokeText(Integer.toString(consigne.getNumero()), x + CanvasAvion.largeurAvion/2,
+                        y + CanvasAvion.hauteurAvion/2);
 
-            gc.drawImage(image,
-                    x - CanvasAvion.largeurAvion/2,
-                    y - CanvasAvion.hauteurAvion/2,
-                    CanvasAvion.largeurAvion,
-                    CanvasAvion.hauteurAvion);
+                gc.drawImage(image,
+                        x - CanvasAvion.largeurAvion/2,
+                        y - CanvasAvion.hauteurAvion/2,
+                        CanvasAvion.largeurAvion,
+                        CanvasAvion.hauteurAvion);
+            }
         }
+
 
         if (x == futurPoint.getX() && y == futurPoint.getY())
         {

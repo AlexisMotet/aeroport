@@ -21,9 +21,9 @@ public abstract class Loi {
     public abstract Double getEcartType();
 
     public static String[] nomsLois = {
-            "Uniforme",
-            "Triangulaire",
-            "Exponentielle",
-            "Gaussienne"
+            "Loi uniforme",
+            "Loi triangulaire",
+            "Loi exponentielle",
+            "Loi gaussienne"
     };
 }

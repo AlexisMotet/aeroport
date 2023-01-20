@@ -28,7 +28,7 @@ public class Parametre {
     }
 
     public Parametre(String nom, double min, double max) {
-        assert min < max;
+        if (min >= max) throw new RuntimeException();
         this.nom = nom;
         this.min = min;
         this.max = max;

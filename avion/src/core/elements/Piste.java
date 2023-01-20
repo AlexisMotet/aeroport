@@ -18,7 +18,7 @@ public class Piste implements Serializable {
     }
 
     public Terminal ajouterTerminal() throws Exception {
-        if (terminaux.size() > 3)
+        if (terminaux.size() == 3)
         {
             throw new Exception("Le nombre de terminaux est limite a 3");
         }

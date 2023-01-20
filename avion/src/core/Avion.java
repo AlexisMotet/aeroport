@@ -2,10 +2,12 @@ package core;
 
 import core.attente.Loi;
 import core.evenements.*;
+import core.outils.OutilDate;
 import core.protocole.Consigne;
 import core.protocole.Message;
 import core.radio.RadioClient;
- import enstabretagne.engine.SimEntity;
+import enstabretagne.base.time.LogicalDateTime;
+import enstabretagne.engine.SimEntity;
 import enstabretagne.engine.SimuEngine;
 
 import java.io.IOException;
@@ -14,7 +16,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Avion extends SimEntity {
-    public static final LinkedHashMap<String, HashMap<String, Loi>> attentesEvenements = new LinkedHashMap<>() {{
+    public static final LinkedHashMap<String, HashMap<String, Loi>> attentesEvenements =
+            new LinkedHashMap<>() {{
         put(NotificationTourDeControleArrivee.getNom(),
                 NotificationTourDeControleArrivee.getAttentes());
         put(Approche.getNom(),
@@ -53,6 +56,11 @@ public class Avion extends SimEntity {
 
     private eEtat etat;
     private RadioClient radio;
+
+    public RadioClient getRadio() {
+        return radio;
+    }
+
     private Consigne consigne;
     private long retardAtterrissage = -1;
     private long retardDecollage = -1;
@@ -71,8 +79,11 @@ public class Avion extends SimEntity {
         }
         setEtat(Avion.eEtat.CIEL);
         setConsigne(null);
+        LogicalDateTime dateArrivee = getEngine().getCurrentDate();
+        if (!OutilDate.checkSiJour(dateArrivee)) dateArrivee =
+                OutilDate.obtenirProchainMatin(dateArrivee);
         getEngine().postEvent(new NotificationTourDeControleArrivee(this,
-                getEngine().getCurrentDate()));
+                dateArrivee));
     }
 
     public Message utiliserRadio(Message msg) throws IOException,

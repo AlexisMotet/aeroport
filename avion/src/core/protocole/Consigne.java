@@ -6,11 +6,6 @@ public class Consigne implements Serializable {
     private final int piste;
     private final int terminal;
     private final int emplacement;
-
-    public int getNumero() {
-        return numero;
-    }
-
     private final int numero;
     public int getPiste() {
         return piste;
@@ -22,6 +17,10 @@ public class Consigne implements Serializable {
 
     public int getEmplacement() {
         return emplacement;
+    }
+
+    public int getNumero() {
+        return numero;
     }
 
 

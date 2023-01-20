@@ -2,6 +2,7 @@ package core.evenements;
 
 import core.Avion;
 import core.attente.Exponentielle;
+import core.attente.Gaussienne;
 import core.attente.Loi;
 import core.attente.Uniforme;
 import enstabretagne.base.time.LogicalDateTime;
@@ -14,12 +15,10 @@ import java.util.HashMap;
 public class RoulementArrivee extends EvenementAvion
 {
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Notification Tour De Controle Fin De Vol", new Uniforme());
+        put("Attente Notification Tour De Controle Fin De Vol", new Gaussienne(4, 2));
     }};
-    private final Avion avion;
     public RoulementArrivee(SimEntity entite, LogicalDateTime dateOccurence) {
         super(entite, dateOccurence);
-        avion = (Avion) entite;
     }
 
     public static HashMap<String, Loi> getAttentes() {
@@ -39,8 +38,9 @@ public class RoulementArrivee extends EvenementAvion
     public void process()
     {
         avion.setEtat(Avion.eEtat.ROULEMENT_ARRIVEE);
-        LogicalDateTime date = getDateOccurence().add(
-                LogicalDuration.ofMinutes(attentes.get("Attente Notification Tour De Controle Fin De Vol").next()));
-        avion.getEngine().postEvent(new NotificationTourDeControleFinDeVol(getEntity(), date));
+        LogicalDateTime futureDate = getDateOccurence().add(
+                LogicalDuration.ofMinutes(
+                        attentes.get("Attente Notification Tour De Controle Fin De Vol").next()));
+        avion.getEngine().postEvent(new NotificationTourDeControleFinDeVol(getEntity(), futureDate));
     }
 }

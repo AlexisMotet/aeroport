@@ -1,6 +1,7 @@
 package core.evenements;
 
 import core.Avion;
+import core.attente.Gaussienne;
 import core.attente.Loi;
 import core.attente.Uniforme;
 import core.outils.OutilDate;
@@ -17,14 +18,13 @@ import java.util.HashMap;
 
 public class NotificationTourDeControleArrivee extends EvenementAvion
 {
+
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Approche", new Uniforme());
-        put("Attente Notification Tour De Controle Arrivee", new Uniforme());
+        put("Attente Approche", new Gaussienne(3.5, 1.5));
+        put("Attente Notification Tour De Controle Arrivee", new Gaussienne(20, 5));
     }};
-    private final Avion avion;
     public NotificationTourDeControleArrivee(SimEntity entite, LogicalDateTime dateOccurence) {
         super(entite, dateOccurence);
-        avion = (Avion) entite;
     }
 
     public static HashMap<String, Loi> getAttentes() {
@@ -45,30 +45,23 @@ public class NotificationTourDeControleArrivee extends EvenementAvion
         avion.setEtat(Avion.eEtat.CIEL);
         try
         {
-            LogicalDateTime dateArrivee = getDateOccurence().add(LogicalDuration.ofMinutes(
-                    attentes.get("Attente Notification Tour De Controle Arrivee").next()));
-            if (OutilDate.checkSiJour(dateArrivee)) {
-                Message message = avion.utiliserRadio(new MessageArrivee());
-                eMessage msg = eMessage.valueOf(message.getClass().getSimpleName());
-                if (msg == eMessage.MessageVoieArrivee) {
-                    avion.setConsigne(((MessageVoieArrivee) message).getConsigne());
-                    avion.setEtat(Avion.eEtat.CIEL_CONSIGNE_ARRIVEE);
-                    avion.getEngine().postEvent(new Approche(getEntity(), dateArrivee));
-                }
-                else {
-                    LogicalDuration retard = LogicalDuration.ofMinutes(attentes.get(
-                            "Attente Notification Tour De Controle Arrivee").next());
-                    avion.ajouterRetardAtterissage((long)retard.getTotalOfSeconds());
-                    LogicalDateTime date = getDateOccurence().add(retard);
-                    avion.getEngine().postEvent(new NotificationTourDeControleArrivee(getEntity(), date));
-                }
+            Message message = avion.utiliserRadio(new MessageArrivee());
+            eMessage msg = eMessage.valueOf(message.getClass().getSimpleName());
+            if (msg == eMessage.MessageVoieArrivee) {
+                avion.setConsigne(((MessageVoieArrivee) message).getConsigne());
+                avion.setEtat(Avion.eEtat.CIEL_CONSIGNE_ARRIVEE);
+                LogicalDateTime futureDate = getDateOccurence().add(
+                        LogicalDuration.ofMinutes(
+                                attentes.get("Attente Approche").next()));
+                avion.getEngine().postEvent(new Approche(getEntity(), futureDate));
             }
-            else
-            {
-                avion.getEngine().postEvent(new NotificationTourDeControleArrivee(getEntity(),
-                        OutilDate.obtenirProchainMatin(getDateOccurence())));
+            else {
+                LogicalDuration retard = LogicalDuration.ofMinutes(attentes.get(
+                        "Attente Notification Tour De Controle Arrivee").next());
+                avion.ajouterRetardAtterissage((long)retard.getTotalOfSeconds());
+                LogicalDateTime futureDate = getDateOccurence().add(retard);
+                avion.getEngine().postEvent(new NotificationTourDeControleArrivee(getEntity(), futureDate));
             }
-
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

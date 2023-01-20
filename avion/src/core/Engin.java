@@ -1,24 +1,19 @@
 package core;
 
-import core.outils.OutilDate;
 import enstabretagne.base.time.LogicalDateTime;
-import enstabretagne.base.time.LogicalDuration;
+import enstabretagne.engine.SimEntity;
 import enstabretagne.engine.SimEvent;
 import enstabretagne.engine.SimuEngine;
-
-import java.time.Duration;
 
 public class Engin extends SimuEngine {
     // :)
     // https://stackoverflow.com/questions/15505515/java-long-primitive-type-maximum-limit
-
     private long retardAtterrissageCumule = 0;
     private long retardDecollageCumule = 0;
     private long retardMoyenAtterrissage = 0;
     private long retardMoyenDecollage = 0;
     private int cAtterrissage = 0;
     private int cDecollage = 0;
-
     public Engin(LogicalDateTime currentDate, LogicalDateTime endDate) {
         super(currentDate, endDate);
     }

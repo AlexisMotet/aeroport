@@ -36,9 +36,7 @@ public class AeroportGraphique implements ElementGraphique {
         return mapPointsDuCiel;
     }
     private double hauteurCiel;
-
-    private static final MoreRandom random = new MoreRandom();
-
+    private final MoreRandom random = new MoreRandom();
     private final HashMap<PisteGraphique, Point> mapConsignePistes  = new HashMap<>();
 
     public AeroportGraphique(Aeroport aeroport) {
@@ -76,11 +74,11 @@ public class AeroportGraphique implements ElementGraphique {
 
     @Override
     public void peindre(GraphicsContext gc, double x0, double y0, double w, double h) {
+        xCiel = w + 3 * CanvasAvion.largeurAvion;
+        y0Ciel = y0;
         double hauteurBandeHerbe = h/4;
         gc.drawImage(image, x0, y0, w, h);
         dessinerTourDeControle(gc, y0, w, hauteurBandeHerbe);
-        xCiel = w + 3 * CanvasAvion.largeurAvion;
-        y0Ciel = y0;
         genererMapDePointsDuCiel();
         hauteurCiel = h;
         y0 += hauteurBandeHerbe;

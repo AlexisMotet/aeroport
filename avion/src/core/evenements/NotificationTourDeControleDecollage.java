@@ -1,6 +1,7 @@
 package core.evenements;
 
 import core.Avion;
+import core.attente.Gaussienne;
 import core.attente.Loi;
 import core.attente.Uniforme;
 import core.elements.Aeroport;
@@ -18,15 +19,13 @@ import java.util.HashMap;
 public class NotificationTourDeControleDecollage extends EvenementAvion
 {
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Notification Tour De Controle Arrivee", new Uniforme());
-        put("Attente Notification Tour De Controle Decollage", new Uniforme());
+        put("Attente Notification Tour De Controle Arrivee", new Gaussienne(0.1, 0.1));
+        put("Attente Notification Tour De Controle Decollage", new Gaussienne(3, 0.1));
     }};
 
-    private final Avion avion;
     public NotificationTourDeControleDecollage(SimEntity entite, LogicalDateTime dateOccurence)
     {
         super(entite, dateOccurence);
-        avion = (Avion) entite;
     }
 
     public static HashMap<String, Loi> getAttentes() {
@@ -51,18 +50,16 @@ public class NotificationTourDeControleDecollage extends EvenementAvion
             eMessage msg = eMessage.valueOf(message.getClass().getSimpleName());
             if (msg == eMessage.MessageOk)
             {
-                LogicalDateTime dateArrivee = getDateOccurence().add(LogicalDuration.ofMinutes(
-                        attentes.get("Attente Notification Tour De Controle Arrivee").next()));
                 avion.setEtat(Avion.eEtat.CIEL_DEPART);
-                avion.getEngine().postEvent(new NotificationTourDeControleArrivee(getEntity(),
-                        dateArrivee));
+                avion.getEngine().postEvent(new AutoDestruction(getEntity(),
+                        getDateOccurence()));
             }
             else {
-                LogicalDateTime date = getDateOccurence().add(
+                LogicalDateTime futureDate = getDateOccurence().add(
                         LogicalDuration.ofMinutes(attentes.get(
                                 "Attente Notification Tour De Controle Decollage").next()));
                 avion.getEngine().postEvent(new NotificationTourDeControleDecollage(getEntity(),
-                        date));
+                        futureDate));
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);

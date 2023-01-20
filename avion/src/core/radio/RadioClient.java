@@ -32,6 +32,5 @@ public class RadioClient implements Radio {
         r.receive(paquet);
         ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(buffer));
         return (Message) ois.readObject();
-
     }
 }

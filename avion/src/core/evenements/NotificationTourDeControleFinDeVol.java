@@ -2,6 +2,7 @@ package core.evenements;
 
 import core.Avion;
 import core.attente.Exponentielle;
+import core.attente.Gaussienne;
 import core.attente.Loi;
 import core.attente.Uniforme;
 import core.protocole.Message;
@@ -18,13 +19,11 @@ import java.util.HashMap;
 public class NotificationTourDeControleFinDeVol extends EvenementAvion
 {
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Dechargement Passagers", new Uniforme());
-        put("Attente Notification Tour De Controle Fin De Vol", new Uniforme());
+        put("Attente Dechargement Passagers", new Gaussienne(0.1, 0.1));
+        put("Attente Notification Tour De Controle Fin De Vol", new Gaussienne(5, 1));
     }};
-    private final Avion avion;
     public NotificationTourDeControleFinDeVol(SimEntity entite, LogicalDateTime dateOccurence) {
         super(entite, dateOccurence);
-        avion = (Avion) entite;
     }
 
     public static HashMap<String, Loi> getAttentes() {
@@ -49,16 +48,16 @@ public class NotificationTourDeControleFinDeVol extends EvenementAvion
             eMessage msg = eMessage.valueOf(message.getClass().getSimpleName());
             if (msg == eMessage.MessageOk)
             {
-                LogicalDateTime date = getDateOccurence().add(
+                LogicalDateTime futureDate = getDateOccurence().add(
                         LogicalDuration.ofMinutes(attentes.get(
                                 "Attente Dechargement Passagers").next()));
-                avion.getEngine().postEvent(new DechargementPassagers(getEntity(), date));
+                avion.getEngine().postEvent(new DechargementPassagers(getEntity(), futureDate));
             } else
             {
-                LogicalDateTime date = getDateOccurence().add(
+                LogicalDateTime futureDate = getDateOccurence().add(
                         LogicalDuration.ofMinutes(attentes.get(
                                 "Attente Notification Tour De Controle Fin De Vol").next()));
-                avion.getEngine().postEvent(new NotificationTourDeControleFinDeVol(getEntity(), date));
+                avion.getEngine().postEvent(new NotificationTourDeControleFinDeVol(getEntity(), futureDate));
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);

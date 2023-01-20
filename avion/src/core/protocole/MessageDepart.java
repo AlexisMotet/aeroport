@@ -8,7 +8,7 @@ public class MessageDepart extends Message {
         return consigne;
     }
 
-    public MessageDepart(Consigne consigne, LogicalDateTime dateDecollage) {
+    public MessageDepart(Consigne consigne) {
         this.consigne = consigne;
     }
 }

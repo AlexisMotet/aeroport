@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class SimuEngine implements Runnable {
     protected final SortedList<SimEvent> sortedEventList;
-    final private List<SimEntity> entityList;
+    final protected List<SimEntity> entityList;
     protected LogicalDateTime currentDate;
     protected final LogicalDateTime endDate;
 

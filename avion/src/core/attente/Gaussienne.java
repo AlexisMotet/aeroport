@@ -3,8 +3,8 @@ package core.attente;
 import java.util.ArrayList;
 
 public class Gaussienne extends Loi {
-    private final Parametre mu = new Parametre("mu", 0, 10);
-    private final Parametre sigma = new Parametre("sigma", 0, 10);
+    private final Parametre mu = new Parametre("mu", 0, 60);
+    private final Parametre sigma = new Parametre("sigma", 0, 60);
     public static double MU = 2;
     public static double SIGMA = 5;
 
@@ -12,14 +12,19 @@ public class Gaussienne extends Loi {
         add(mu);
         add(sigma);
     }};
-    @Override
-    public String getNom() {
-        return "Gaussienne";
-    }
 
     public Gaussienne() {
-        this.mu.setVal(MU);
-        this.sigma.setVal(SIGMA);
+        mu.setVal(MU);
+        sigma.setVal(SIGMA);
+    }
+
+    public Gaussienne(double mu, double sigma) {
+        this.mu.setVal(mu);
+        this.sigma.setVal(sigma);
+    }
+    @Override
+    public long next() {
+        return (long) (getRandom().nextGaussian() * sigma.getVal() + mu.getVal());
     }
 
     @Override
@@ -28,8 +33,8 @@ public class Gaussienne extends Loi {
     }
 
     @Override
-    public long next() {
-        return (long) (getRandom().nextGaussian() * sigma.getVal() + mu.getVal());
+    public String getNom() {
+        return "Loi gaussienne";
     }
 
     @Override

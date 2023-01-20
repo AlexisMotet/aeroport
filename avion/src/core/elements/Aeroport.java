@@ -1,66 +1,39 @@
 package core.elements;
 
 import core.TourDeControleParfaite;
+import core.outils.ParserConfig;
 import enstabretagne.base.time.LogicalDuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Aeroport {
-
     public static LogicalDuration limiteSoir = LogicalDuration.ofHours(21);
     public static LogicalDuration limiteMatin = LogicalDuration.ofHours(5);
+
+    public static LogicalDuration debutHeureDePointeMatin = LogicalDuration.ofHours(7);
+    public static LogicalDuration finHeureDePointeMatin = LogicalDuration.ofHours(10);
+    public static LogicalDuration debutHeureDePointeSoir = LogicalDuration.ofHours(17);
+    public static LogicalDuration finHeureDePointeSoir = LogicalDuration.ofHours(19);
     private final ArrayList<Piste> pistes = new ArrayList<>();
+    private final HashMap<Integer, Piste> mapPistes = new HashMap<>();
 
     public HashMap<Integer, Piste> getMapPistes() {
         return mapPistes;
     }
-    private final HashMap<Integer, Piste> mapPistes = new HashMap<>();
     final private TourDeControleParfaite tourDeControle;
 
-    public Aeroport() {
+    public Aeroport(String cheminConfig) {
         try {
             tourDeControle = new TourDeControleParfaite(this);
-            Piste piste = ajouterPiste();
-            Terminal terminal = piste.ajouterTerminal();
-            terminal.ajouterEmplacement();
-            terminal.ajouterEmplacement();
-            terminal.ajouterEmplacement();
-            terminal.ajouterEmplacement();
-            terminal.ajouterEmplacement();
-            terminal.ajouterEmplacement();
-            terminal.ajouterEmplacement();
-            terminal.ajouterEmplacement();
-            Terminal terminal1 = piste.ajouterTerminal();
-            terminal1.ajouterEmplacement();
-            terminal1.ajouterEmplacement();
-            terminal1.ajouterEmplacement();
-            terminal1.ajouterEmplacement();
-            terminal1.ajouterEmplacement();
-            terminal1.ajouterEmplacement();
-            terminal1.ajouterEmplacement();
-            terminal1.ajouterEmplacement();
-            piste.ajouterTerminal();
-            Piste piste1 = ajouterPiste();
-            Terminal terminal2 = piste1.ajouterTerminal();
-            terminal2.ajouterEmplacement();
-            terminal2.ajouterEmplacement();
-            terminal2.ajouterEmplacement();
-            terminal2.ajouterEmplacement();
-            Piste piste2 = ajouterPiste();
-            Terminal terminal3 = piste2.ajouterTerminal();
-            terminal3.ajouterEmplacement();
-            terminal3.ajouterEmplacement();
-            terminal3.ajouterEmplacement();
-            terminal3.ajouterEmplacement();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
+        ParserConfig.parse(cheminConfig, this);
     }
 
     public Piste ajouterPiste() throws Exception {
-        if (pistes.size() > 3)
+        if (pistes.size() == 3)
         {
             throw new Exception("Le nombre de pistes est limite a 3");
         }

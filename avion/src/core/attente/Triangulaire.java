@@ -3,17 +3,23 @@ package core.attente;
 import java.util.ArrayList;
 
 public class Triangulaire extends Loi {
-    private final Parametre a = new Parametre("a", 0, 10);
-    private final Parametre b = new Parametre("b", 0, 10);
-    private final Parametre c = new Parametre("c", 0, 10);
+    private final Parametre a = new Parametre("a", 0, 60);
+    private final Parametre b = new Parametre("b", 0, 60);
+    private final Parametre c = new Parametre("c", 0, 60);
     public static double A = 2;
     public static double B = 5;
     public static double C = 7;
 
     public Triangulaire() {
-        this.a.setVal(A);
-        this.b.setVal(B);
-        this.c.setVal(C);
+        a.setVal(A);
+        b.setVal(B);
+        c.setVal(C);
+    }
+
+    public Triangulaire(double a, double b, double c) {
+        this.a.setVal(a);
+        this.b.setVal(b);
+        this.c.setVal(c);
     }
     private final ArrayList<Parametre> parametres = new ArrayList<>(){{
         add(a);
@@ -29,13 +35,13 @@ public class Triangulaire extends Loi {
         }
         else
         {
-            return 99;
+            return 60;
         }
     }
 
     @Override
     public String getNom() {
-        return "Triangulaire";
+        return "Loi triangulaire";
     }
     @Override
     public ArrayList<Parametre> getParametres() {
@@ -50,7 +56,7 @@ public class Triangulaire extends Loi {
         }
         else
         {
-            return (double) 99;
+            return (double) 60;
         }
     }
     @Override

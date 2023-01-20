@@ -14,7 +14,11 @@ import java.util.concurrent.TimeUnit;
 
 
 public class TourDeControleParfaite implements Runnable {
+    private boolean enFonctionnement = true;
 
+    public void stopper() {
+        enFonctionnement = false;
+    }
     private final Aeroport aeroport;
     private final HashMap<Integer, Consigne> avionsConnus = new HashMap<>();
     public TourDeControleParfaite(Aeroport aeroport) {
@@ -24,7 +28,7 @@ public class TourDeControleParfaite implements Runnable {
     public void run() {
         try {
             RadioServeur radio = new RadioServeur(5430);
-            while (true)
+            while (enFonctionnement)
             {
                 Message message = radio.recevoirMessage();
                 eMessage msg = eMessage.valueOf(message.getClass().getSimpleName());
@@ -122,35 +126,5 @@ public class TourDeControleParfaite implements Runnable {
         if (terminal.getTW2().getOccupee()) return new MessageNok();
         if (piste.getOccupee()) return new MessageNok();
         return new MessageOk();
-    }
-
-
-    public static void main(String[] args)
-    {
-
-        Aeroport aeroport = new Aeroport();
-        TourDeControleParfaite tourDeControle = new TourDeControleParfaite(aeroport);
-        Thread t = new Thread(tourDeControle);
-        t.start();
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            RadioClient radio = new RadioClient(5430);
-            radio.envoyerMessage(new MessageArrivee());
-            Message msg = radio.recevoirMessage();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            TimeUnit.SECONDS.sleep(40);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 }
