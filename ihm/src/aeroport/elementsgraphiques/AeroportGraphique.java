@@ -8,7 +8,6 @@ import core.elements.Aeroport;
 import core.elements.Piste;
 import core.elements.Terminal;
 import core.protocole.Consigne;
-import enstabretagne.base.math.MoreRandom;
 import javafx.scene.AccessibleAction;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Accordion;
@@ -36,7 +35,6 @@ public class AeroportGraphique implements ElementGraphique {
         return mapPointsDuCiel;
     }
     private double hauteurCiel;
-    private final MoreRandom random = new MoreRandom();
     private final HashMap<PisteGraphique, Point> mapConsignePistes  = new HashMap<>();
 
     public AeroportGraphique(Aeroport aeroport) {
@@ -106,7 +104,7 @@ public class AeroportGraphique implements ElementGraphique {
 
     public int genererIdPointDuCiel()
     {
-        return (int) random.nextUniform(0, 40);
+        return (int) Aeroport.getRandom().nextUniform(0, 40);
     }
 
     public void genererMapDePointsDuCiel()
@@ -116,8 +114,8 @@ public class AeroportGraphique implements ElementGraphique {
 
     public Point genererPointDuCiel()
     {
-        double offset = random.nextUniform(-hauteurCiel/10, hauteurCiel/10);
-        double pileOuFace = random.nextUniform();
+        double offset = Aeroport.getRandom().nextUniform(-hauteurCiel/10, hauteurCiel/10);
+        double pileOuFace = Aeroport.getRandom().nextUniform();
         double y;
         if (pileOuFace < 0.5) y = y0Ciel + offset;
         else y = y0Ciel + hauteurCiel + offset;

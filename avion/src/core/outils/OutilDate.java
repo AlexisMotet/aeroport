@@ -14,16 +14,28 @@ public class OutilDate {
                 date.soustract(dateComparaison).compareTo(Aeroport.limiteSoir) <= 0;
     }
 
+    public static boolean checkSiWeekEnd(LogicalDateTime date){
+        return(date.getDayOfWeek() == DayOfWeek.SATURDAY ||
+                date.getDayOfWeek() == DayOfWeek.SUNDAY);
+    }
+
+    public static long obtenirHeure(LogicalDateTime date)
+    {
+        LogicalDateTime dateComparaison = date.getCopy().truncateToDays();
+        return date.soustract(dateComparaison).getTotalOfHours();
+    }
+
     public static Affluence obtenirAffluence(LogicalDateTime date)
     {
+        if (!checkSiJour(date)) return Affluence.NUIT;
+        else if (checkSiWeekEnd(date))
+            return Affluence.WEEK_END;
         LogicalDateTime dateComparaison = date.getCopy().truncateToDays();
         boolean res = date.soustract(dateComparaison).compareTo(Aeroport.debutHeureDePointeMatin) >= 0 &&
                 date.soustract(dateComparaison).compareTo(Aeroport.finHeureDePointeMatin) <= 0;
         res |= date.soustract(dateComparaison).compareTo(Aeroport.debutHeureDePointeSoir) >= 0 &&
                 date.soustract(dateComparaison).compareTo(Aeroport.finHeureDePointeSoir) <= 0;
         if (res) return Affluence.HEURE_DE_POINTE;
-        else if (date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY)
-            return Affluence.WEEK_END;
         return Affluence.NORMALE;
     }
 

@@ -1,10 +1,8 @@
 package core.evenements;
 
 import core.Avion;
-import core.attente.Gaussienne;
-import core.attente.Loi;
-import core.attente.Uniforme;
-import enstabretagne.base.logger.Logger;
+import core.attentes.Gaussienne;
+import core.attentes.Loi;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 import enstabretagne.engine.SimEntity;
@@ -15,7 +13,7 @@ public class Approche extends EvenementAvion
 {
 
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Atterissage", new Gaussienne(3.5, 1.5));
+        put("duree Approche", new Gaussienne(3.5, 1.5));
     }};
 
     public Approche(SimEntity entite, LogicalDateTime dateOccurence)
@@ -40,10 +38,9 @@ public class Approche extends EvenementAvion
     @Override
     public void process()
     {
-        Logger.Information(avion, "", "");
         avion.setEtat(Avion.eEtat.APPROCHE);
         LogicalDateTime futureDate = getDateOccurence().add(LogicalDuration.ofMinutes(
-                attentes.get("Attente Atterissage").next()));
+                attentes.get("duree Approche").next()));
         avion.getEngine().postEvent(new Atterissage(getEntity(), futureDate));
     }
 }

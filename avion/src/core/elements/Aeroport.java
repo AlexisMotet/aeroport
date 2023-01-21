@@ -2,15 +2,21 @@ package core.elements;
 
 import core.TourDeControleParfaite;
 import core.outils.ParserConfig;
+import enstabretagne.base.math.MoreRandom;
 import enstabretagne.base.time.LogicalDuration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Aeroport {
-    public static LogicalDuration limiteSoir = LogicalDuration.ofHours(21);
-    public static LogicalDuration limiteMatin = LogicalDuration.ofHours(5);
+    private static MoreRandom random;
 
+    public static MoreRandom getRandom() {
+        return random;
+    }
+
+    public static LogicalDuration limiteSoir = LogicalDuration.ofHours(22);
+    public static LogicalDuration limiteMatin = LogicalDuration.ofHours(7);
     public static LogicalDuration debutHeureDePointeMatin = LogicalDuration.ofHours(7);
     public static LogicalDuration finHeureDePointeMatin = LogicalDuration.ofHours(10);
     public static LogicalDuration debutHeureDePointeSoir = LogicalDuration.ofHours(17);
@@ -29,7 +35,8 @@ public class Aeroport {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        ParserConfig.parse(cheminConfig, this);
+        int seed = ParserConfig.parse(cheminConfig, this);
+        random = new MoreRandom(seed);
     }
 
     public Piste ajouterPiste() throws Exception {

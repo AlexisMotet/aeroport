@@ -3,6 +3,7 @@ package core.evenements;
 import core.Avion;
 import core.EntiteSupreme;
 import core.outils.OutilDate;
+import enstabretagne.base.logger.Logger;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.base.time.LogicalDuration;
 import enstabretagne.engine.SimEntity;

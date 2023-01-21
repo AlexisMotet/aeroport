@@ -1,10 +1,7 @@
 package core.evenements;
 
-import core.Avion;
-import core.attente.Gaussienne;
-import core.attente.Loi;
-import core.attente.Uniforme;
-import core.outils.OutilDate;
+import core.attentes.Gaussienne;
+import core.attentes.Loi;
 import core.protocole.Message;
 import core.protocole.MessageDepart;
 import core.protocole.eMessage;
@@ -18,8 +15,9 @@ import java.util.HashMap;
 public class NotificationTourDeControleDepart extends EvenementAvion {
 
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Roulement Depart", new Gaussienne(0.1, 0.1));
-        put("Attente Notification Tour De Controle Depart", new Gaussienne(10, 2));
+        put("attente avant nouvelle notification", new Gaussienne(10, 2));
+        put("attente avant Roulement Depart", new Gaussienne(0.1, 0.1));
+
     }};
 
     public NotificationTourDeControleDepart(SimEntity entite, LogicalDateTime dateOccurence) {
@@ -45,25 +43,17 @@ public class NotificationTourDeControleDepart extends EvenementAvion {
         {
             Message message = avion.utiliserRadio(new MessageDepart(avion.getConsigne()));
             eMessage msg = eMessage.valueOf(message.getClass().getSimpleName());
-            LogicalDateTime dateDepart = getDateOccurence().add(LogicalDuration.ofMinutes(
-                    attentes.get("Attente Roulement Depart").next()));
             if (msg == eMessage.MessageOk)
             {
-                if (!OutilDate.checkSiJour(dateDepart))
-                {
-                    avion.getEngine().postEvent(new RoulementDepart(getEntity(),
-                            OutilDate.obtenirProchainMatin(dateDepart)));
-                }
-                else
-                {
-                    avion.getEngine().postEvent(new RoulementDepart(getEntity(),
-                            dateDepart));
-                }
+                LogicalDateTime dateDepart = getDateOccurence().add(LogicalDuration.ofMinutes(
+                        attentes.get("attente avant Roulement Depart").next()));
+                avion.getEngine().postEvent(new RoulementDepart(getEntity(),
+                        dateDepart));
             }
             else
             {
                 LogicalDuration retard = LogicalDuration.ofMinutes(attentes.get(
-                        "Attente Notification Tour De Controle Depart").next());
+                        "attente avant nouvelle notification").next());
                 avion.ajouterRetardDecollage((long) retard.getTotalOfSeconds());
                 LogicalDateTime futureDate = getDateOccurence().add(retard);
                 avion.getEngine().postEvent(new NotificationTourDeControleDepart(getEntity(), futureDate));

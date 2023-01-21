@@ -16,7 +16,6 @@ public class SimuEngine implements Runnable {
     final protected List<SimEntity> entityList;
     protected LogicalDateTime currentDate;
     protected final LogicalDateTime endDate;
-
     public SortedList<SimEvent> getSortedEventList() {
         return sortedEventList;
     }

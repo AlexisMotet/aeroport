@@ -1,7 +1,6 @@
 package core.evenements;
 
-import core.Avion;
-import core.attente.Loi;
+import core.attentes.Loi;
 import enstabretagne.base.time.LogicalDateTime;
 import enstabretagne.engine.SimEntity;
 import enstabretagne.engine.SimEvent;

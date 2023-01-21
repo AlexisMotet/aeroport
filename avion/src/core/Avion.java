@@ -1,6 +1,6 @@
 package core;
 
-import core.attente.Loi;
+import core.attentes.Loi;
 import core.evenements.*;
 import core.outils.OutilDate;
 import core.protocole.Consigne;
@@ -30,6 +30,8 @@ public class Avion extends SimEntity {
                 NotificationTourDeControleFinDeVol.getAttentes());
         put(DechargementPassagers.getNom(),
                 DechargementPassagers.getAttentes());
+            put(RavitaillementAvion.getNom(),
+                    RavitaillementAvion.getAttentes());
         put(Embarquement.getNom(),
                 Embarquement.getAttentes());
         put(NotificationTourDeControleDepart.getNom(),
@@ -56,14 +58,14 @@ public class Avion extends SimEntity {
 
     private eEtat etat;
     private RadioClient radio;
-
-    public RadioClient getRadio() {
-        return radio;
-    }
-
     private Consigne consigne;
     private long retardAtterrissage = -1;
     private long retardDecollage = -1;
+
+    private LogicalDateTime dateArrivee = null;
+    private LogicalDateTime dateRavitaillement = null;
+    private LogicalDateTime dateEmbarquement = null;
+    private LogicalDateTime dateDecollage = null;
 
     public Avion(SimuEngine eng) {
         super(eng);
@@ -134,6 +136,43 @@ public class Avion extends SimEntity {
             return sauv;
         }
         return -1;
+    }
+    public void setDateArrivee(LogicalDateTime dateArrivee) {
+        this.dateArrivee = dateArrivee;
+    }
+
+    public void setDateRavitaillement(LogicalDateTime dateRavitaillement) {
+        this.dateRavitaillement = dateRavitaillement;
+    }
+
+    public void setDateEmbarquement(LogicalDateTime dateEmbarquement) {
+        this.dateEmbarquement = dateEmbarquement;
+    }
+
+    public void setDateDecollage(LogicalDateTime dateDecollage) {
+        this.dateDecollage = dateDecollage;
+    }
+    public long getDureePhaseAtterissage() {
+        if (etat == eEtat.ATTERI && dateRavitaillement != null && dateArrivee != null)
+        {
+            LogicalDateTime sauvR = dateRavitaillement;
+            LogicalDateTime sauvA = dateArrivee;
+            dateRavitaillement = null;
+            dateArrivee = null;
+            return sauvR.soustract(sauvA).getTotalOfMinutes();
+        }
+        else return -1;
+    }
+    public long getDureePhaseDecollage() {
+        if (etat == eEtat.CIEL_DEPART && dateEmbarquement != null && dateDecollage != null)
+        {
+            LogicalDateTime sauvE = dateEmbarquement;
+            LogicalDateTime sauvD = dateDecollage;
+            dateEmbarquement = null;
+            dateDecollage = null;
+            return sauvD.soustract(sauvE).getTotalOfMinutes();
+        }
+        else return -1;
     }
 }
 

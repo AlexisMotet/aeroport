@@ -2,6 +2,7 @@ package aeroport;
 
 import canvas.CanvasAvion;
 import core.Avion;
+import core.elements.Aeroport;
 import core.protocole.Consigne;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
@@ -9,7 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import java.util.HashMap;
-import java.util.Random;
 
 public class AvionGraphique {
 
@@ -29,7 +29,7 @@ public class AvionGraphique {
             "Bipolar Plane\\Type_4\\Animation\\",
             "Bipolar Plane\\Type_5\\Animation\\",
             "Bipolar Plane\\Type_6\\Animation\\",
-            "Bipolar Plane\\Type_7\\Animation\\",
+            "Bipolar Plane\\Type_7\\Animated\\",
             "Blenheim\\Type_1\\Animation\\",
             "Blenheim\\Type_2\\Animation\\",
             "Hawker Tempest MKII\\Type_1\\Animated\\",
@@ -59,8 +59,7 @@ public class AvionGraphique {
     private double dernierR = -1;
 
     public AvionGraphique(Point pointDuCiel, int idPointDuCiel) {
-        Random rand = new Random();
-        int rnd = rand.nextInt(types.length);
+        int rnd = (int) Aeroport.getRandom().nextUniform(0, types.length);
         String type = chemin + types[rnd];
         imageView = new ImageView(mapImages.get(type + "1.png"));
         parametres = new SnapshotParameters();

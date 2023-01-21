@@ -1,17 +1,17 @@
 package core;
 
+import core.elements.Aeroport;
 import core.evenements.CreationAvion;
 import core.outils.OutilDate;
 import core.outils.Affluence;
-import enstabretagne.base.math.MoreRandom;
 import enstabretagne.base.time.LogicalDateTime;
+import enstabretagne.base.time.LogicalDuration;
 import enstabretagne.engine.SimEntity;
 import enstabretagne.engine.SimuEngine;
 
 import java.util.Random;
 
 public class EntiteSupreme extends SimEntity {
-    private final MoreRandom random = new MoreRandom();
     public EntiteSupreme(SimuEngine eng) {
         super(eng);
         init();
@@ -27,19 +27,23 @@ public class EntiteSupreme extends SimEntity {
         Affluence affluence = OutilDate.obtenirAffluence(date);
         switch (affluence) {
             case HEURE_DE_POINTE -> {
-                double mu = 20;
+                double mu = 10;
                 double sigma = mu / 10;
-                return (long) (random.nextGaussian() * sigma + mu);
+                return (long) (Aeroport.getRandom().nextGaussian() * sigma + mu);
             }
             case WEEK_END -> {
                 double mu = 40;
                 double sigma = mu / 10;
-                return (long) (random.nextGaussian() * sigma + mu);
+                return (long) (Aeroport.getRandom().nextGaussian() * sigma + mu);
             }
             case NORMALE -> {
-                double mu = 10;
+                double mu = 20;
                 double sigma = mu / 10;
-                return (long) (random.nextGaussian() * sigma + mu);
+                return (long) (Aeroport.getRandom().nextGaussian() * sigma + mu);
+            }
+            case NUIT -> {
+                LogicalDateTime matin = OutilDate.obtenirProchainMatin(date);
+                return matin.soustract(date).getTotalOfMinutes();
             }
             default -> {return 60;}
         }

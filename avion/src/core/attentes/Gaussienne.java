@@ -1,4 +1,6 @@
-package core.attente;
+package core.attentes;
+
+import core.elements.Aeroport;
 
 import java.util.ArrayList;
 
@@ -24,7 +26,7 @@ public class Gaussienne extends Loi {
     }
     @Override
     public long next() {
-        return (long) (getRandom().nextGaussian() * sigma.getVal() + mu.getVal());
+        return (long) (Aeroport.getRandom().nextGaussian() * sigma.getVal() + mu.getVal());
     }
 
     @Override

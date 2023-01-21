@@ -11,7 +11,7 @@ import canvas.ResizableCanvas;
 import core.Avion;
 import core.Engin;
 import core.EntiteSupreme;
-import core.attente.*;
+import core.attentes.*;
 import core.elements.Aeroport;
 import core.outils.OutilDate;
 import enstabretagne.base.time.LogicalDateTime;
@@ -73,9 +73,9 @@ public class App extends Application {
         HBox hBoxVitesse = new HBox();
         Label labelVitesse = new Label();
         labelVitesse.setText(String.valueOf(AvionGraphique.vitesse));
-        labelVitesse.setStyle("-fx-font-size : 14;");
+        labelVitesse.setStyle("-fx-font-size : 13;");
         Button boutonMoins = new Button("-");
-        boutonMoins.setStyle("-fx-font-size : 14;");
+        boutonMoins.setStyle("-fx-font-size : 13;");
         boutonMoins.setOnAction(e-> {
             AvionGraphique.vitesse --;
             labelVitesse.setText(String.valueOf(AvionGraphique.vitesse));
@@ -85,32 +85,33 @@ public class App extends Application {
             AvionGraphique.vitesse ++;
             labelVitesse.setText(String.valueOf(AvionGraphique.vitesse));
         });
-        boutonPlus.setStyle("-fx-font-size : 14;");
+        boutonPlus.setStyle("-fx-font-size : 13;");
         hBoxVitesse.setSpacing(10);
         hBoxVitesse.setAlignment(Pos.BASELINE_LEFT);
 
         labelEntite = new Label();
-        labelEntite.setStyle("-fx-font-size : 14;");
+        labelEntite.setStyle("-fx-font-size : 13;");
 
         labelEvenement = new Label();
-        labelEvenement.setStyle("-fx-font-size : 14;");
+        labelEvenement.setStyle("-fx-font-size : 13;");
 
         labelNombreAvions = new Label();
-        labelNombreAvions.setStyle("-fx-font-size : 14;");
+        labelNombreAvions.setStyle("-fx-font-size : 13;");
 
         labelAffluence = new Label();
-        labelAffluence.setStyle("-fx-font-size : 14;");
+        labelAffluence.setStyle("-fx-font-size : 13;");
 
         labelFrequence = new Label();
-        labelFrequence.setStyle("-fx-font-size : 14;");
+        labelFrequence.setStyle("-fx-font-size : 13;");
 
         labelRetardAtterrissage = new Label();
-        labelRetardAtterrissage.setStyle("-fx-font-size : 14;");
+        labelRetardAtterrissage.setStyle("-fx-font-size : 13;");
 
         labelRetardDecollage = new Label();
-        labelRetardDecollage.setStyle("-fx-font-size : 14;");
+        labelRetardDecollage.setStyle("-fx-font-size : 13;");
 
         vBox.getChildren().add(labelHeure);
+
         vBox.getChildren().add(new Label("Vitesse :"));
         hBoxVitesse.getChildren().add(labelVitesse);
         hBoxVitesse.getChildren().add(boutonMoins);
@@ -124,15 +125,17 @@ public class App extends Application {
         vBox.getChildren().add(labelNombreAvions);
         vBox.getChildren().add(new Label("Affluence :"));
         vBox.getChildren().add(labelAffluence);
-        vBox.getChildren().add(new Label("Frequence :"));
+        vBox.getChildren().add(new Label("Frequence d'apparition des avions :"));
         vBox.getChildren().add(labelFrequence);
         vBox.getChildren().add(new Label("Retard moyen a l'atterrissage :"));
         vBox.getChildren().add(labelRetardAtterrissage);
         vBox.getChildren().add(new Label("Retard moyen au decollage :"));
         vBox.getChildren().add(labelRetardDecollage);
-        vBox.setSpacing(10);
+
+        vBox.setSpacing(3);
 
         Accordion accordion = new Accordion();
+        accordion.setStyle("-fx-font-size : 15;");
 
         for (Map.Entry<String, HashMap<String, Loi>> evenement : Avion.attentesEvenements.entrySet())
         {
@@ -213,7 +216,7 @@ public class App extends Application {
         hBox.setPadding(new Insets(10, 10, 10, 10));
         hBox.setSpacing(10);
 
-        Scene s = new Scene(hBox, 1000, 600);
+        Scene s = new Scene(hBox, 1200, 600);
         s.getStylesheets().add("style.css");
         stage.setScene(s);
         stage.setTitle("Aeroport");
@@ -259,8 +262,8 @@ public class App extends Application {
 
     private void initialisationAeroport(StackPane stackPane)
     {
-        LogicalDateTime start = new LogicalDateTime("09/12/2016 20:55:47");
-        LogicalDateTime end = new LogicalDateTime("11/12/2016 10:34:47");
+        LogicalDateTime start = new LogicalDateTime("04/12/2016 20:55:47");
+        LogicalDateTime end = new LogicalDateTime("07/12/2016 10:34:47");
 
         Aeroport aeroport = new Aeroport("C:\\Users\\alexi\\PROJETS\\SIMULATION_DE_SYSTEMES\\aeroport\\avion\\config.txt");
         aeroportGraphique = new AeroportGraphique(aeroport);
@@ -312,6 +315,7 @@ public class App extends Application {
                         case NORMALE -> labelAffluence.setText("Affluence normale");
                         case WEEK_END -> labelAffluence.setText("Week-end");
                         case HEURE_DE_POINTE-> labelAffluence.setText("Heure de pointe");
+                        case NUIT-> labelAffluence.setText("Nuit");
                     }
                     labelFrequence.setText(String.format("%dmin", entiteSupreme.getFrequence()));
                     long retard = eng.getRetardMoyenAtterrissage();

@@ -1,11 +1,8 @@
 package core.evenements;
 
 import core.Avion;
-import core.attente.Gaussienne;
-import core.attente.Loi;
-import core.attente.Uniforme;
-import core.elements.Aeroport;
-import core.outils.OutilDate;
+import core.attentes.Gaussienne;
+import core.attentes.Loi;
 import core.protocole.Message;
 import core.protocole.MessageDecollage;
 import core.protocole.eMessage;
@@ -19,8 +16,7 @@ import java.util.HashMap;
 public class NotificationTourDeControleDecollage extends EvenementAvion
 {
     static private final HashMap<String, Loi> attentes = new HashMap<>(){{
-        put("Attente Notification Tour De Controle Arrivee", new Gaussienne(0.1, 0.1));
-        put("Attente Notification Tour De Controle Decollage", new Gaussienne(3, 0.1));
+        put("attente avant nouvelle notification", new Gaussienne(3, 0.1));
     }};
 
     public NotificationTourDeControleDecollage(SimEntity entite, LogicalDateTime dateOccurence)
@@ -51,13 +47,14 @@ public class NotificationTourDeControleDecollage extends EvenementAvion
             if (msg == eMessage.MessageOk)
             {
                 avion.setEtat(Avion.eEtat.CIEL_DEPART);
+                avion.setDateDecollage(getDateOccurence());
                 avion.getEngine().postEvent(new AutoDestruction(getEntity(),
                         getDateOccurence()));
             }
             else {
                 LogicalDateTime futureDate = getDateOccurence().add(
                         LogicalDuration.ofMinutes(attentes.get(
-                                "Attente Notification Tour De Controle Decollage").next()));
+                                "attente avant nouvelle notification").next()));
                 avion.getEngine().postEvent(new NotificationTourDeControleDecollage(getEntity(),
                         futureDate));
             }

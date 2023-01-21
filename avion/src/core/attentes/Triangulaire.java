@@ -1,4 +1,6 @@
-package core.attente;
+package core.attentes;
+
+import core.elements.Aeroport;
 
 import java.util.ArrayList;
 
@@ -31,7 +33,7 @@ public class Triangulaire extends Loi {
     public long next(){
         if (a.getVal() < b.getVal() && a.getVal() <= c.getVal() && c.getVal() <= b.getVal())
         {
-            return (long) getRandom().nextTriangle(a.getVal(), b.getVal(), c.getVal());
+            return (long) Aeroport.getRandom().nextTriangle(a.getVal(), b.getVal(), c.getVal());
         }
         else
         {

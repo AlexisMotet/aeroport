@@ -4,6 +4,7 @@ import core.elements.Aeroport;
 import core.elements.Emplacement;
 import core.elements.Piste;
 import core.elements.Terminal;
+import enstabretagne.base.math.MoreRandom;
 import org.w3c.dom.ls.LSOutput;
 
 import java.io.*;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class ParserConfig {
-    public static void parse(String cheminConfig, Aeroport aeroport)
+    public static int parse(String cheminConfig, Aeroport aeroport)
     {
         File file = new File(cheminConfig);
         try {
@@ -20,12 +21,14 @@ public class ParserConfig {
             HashMap<String, Terminal> mapTerminaux = new HashMap<>();
 
             System.out.println("========== DEBUT PARSING ==========");
+            int seed = 0;
             String line;
             while ((line = br.readLine()) != null)
             {
                 Scanner scanner = new Scanner(line);
                 scanner.useDelimiter(" ");
                 switch (scanner.next()) {
+                    case "SEED" -> seed = scanner.nextInt();
                     case "AJOUTER_PISTE" -> {
                         String nomPiste = scanner.next();
                         if (mapPistes.containsKey(nomPiste)){
@@ -57,10 +60,10 @@ public class ParserConfig {
                     }
                 }
             }
+            System.out.println("========== FIN PARSING ==========");
+            return seed;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        System.out.println("========== FIN PARSING ==========");
-
     }
 }
